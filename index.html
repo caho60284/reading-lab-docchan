@@ -45,7 +45,6 @@ background:#14b8a6;
 color:#fff
 }
 
-/* modal */
 .modal{
 position:fixed;
 inset:0;
@@ -74,24 +73,10 @@ cursor:pointer;
 color:#888
 }
 
-.modal-close:hover{color:#000}
-
-#readerTitle{
-font-weight:700;
-margin-bottom:6px;
-font-size:17px
-}
-
-#readerIPA{
-color:#26a69a;
-font-size:14px;
-line-height:1.4
-}
-
 #readerMeaning{
-margin-top:8px;
 font-size:15px;
-line-height:1.5
+line-height:1.5;
+white-space:pre-wrap
 }
 
 .modal-actions{
@@ -131,14 +116,11 @@ padding:10px
 <button class="translateBtn" onclick="openReader()">Translate</button>
 </main>
 
-<!-- MODAL -->
 <div id="readerModal" class="modal">
   <div class="modal-box">
 
     <div class="modal-close" onclick="closeReader()">✕</div>
 
-    <div id="readerTitle"></div>
-    <div id="readerIPA"></div>
     <div id="readerMeaning"></div>
 
     <div class="modal-actions">
@@ -154,13 +136,10 @@ function openReader(){
   const text = document.getElementById("readingInput").value.trim()
   if(!text) return
 
-  document.getElementById("readerTitle").innerText = text
+  // PAKAI TRANSLATOR LAMA KAMU
+  const result = translateText(text)
 
-  // IPA (pakai fungsi vocab kamu)
-  document.getElementById("readerIPA").innerText = getIPA(text) || ""
-
-  // TERJEMAHAN INDONESIA (pakai translator kamu yg lama)
-  document.getElementById("readerMeaning").innerText = "Arti: " + (getMeaning(text) || "")
+  document.getElementById("readerMeaning").innerText = result || "(translation empty)"
 
   document.getElementById("readerModal").style.display="flex"
 }
