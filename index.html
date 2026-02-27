@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Reading Lab</title>
 
 <style>
@@ -12,7 +12,7 @@ body{margin:0;background:#f3f5f9;color:#222}
 header{
 position:sticky;top:0;
 background:#fff;
-padding:16px 14px 10px 14px;
+padding:16px 14px 10px;
 box-shadow:0 2px 6px rgba(0,0,0,.08);
 z-index:10
 }
@@ -61,7 +61,7 @@ background:#fff;
 width:100%;
 max-width:520px;
 border-radius:18px;
-padding:20px 18px 18px 18px;
+padding:20px 18px 18px;
 position:relative;
 max-height:85vh;
 overflow:auto;
@@ -77,17 +77,23 @@ color:#999;
 cursor:pointer
 }
 
-#readerEN{
-font-weight:600;
-margin-bottom:14px;
-line-height:1.55;
-white-space:pre-wrap
+#readerEN span{
+display:block;
+margin-bottom:10px;
+cursor:pointer;
+line-height:1.55
+}
+
+#readerEN span.active{
+background:#e0f2f1;
+border-radius:6px;
+padding:4px 6px
 }
 
 #readerID{
 color:#26a69a;
+margin-top:10px;
 line-height:1.6;
-margin-top:6px;
 white-space:pre-wrap
 }
 
@@ -118,12 +124,10 @@ font-size:15px
 </header>
 
 <div class="main">
-<textarea id="inputText" placeholder="Paste or type English text here..."></textarea>
-
-<button class="translateBtn" onclick="openReader()">Translate</button>
+<textarea id="inputText" placeholder="Paste English text..."></textarea>
+<button class="translateBtn" onclick="openReader()">Read</button>
 </div>
 
-<!-- MODAL -->
 <div class="modal" id="readerModal">
 <div class="box">
 
@@ -141,31 +145,52 @@ font-size:15px
 </div>
 
 <script>
+let sentences=[]
+
 function openReader(){
 const text=document.getElementById("inputText").value.trim()
 if(!text)return
 
-document.getElementById("readerEN").innerText=text
-document.getElementById("readerID").innerText="Translating..."
-
+document.getElementById("readerID").innerText=""
 document.getElementById("readerModal").style.display="flex"
 
-translate(text)
+splitSentences(text)
+renderSentences()
 }
 
 function closeReader(){
 document.getElementById("readerModal").style.display="none"
 }
 
-function hear(){
-const text=document.getElementById("readerEN").innerText
-if(!text)return
-speechSynthesis.cancel()
-speechSynthesis.speak(new SpeechSynthesisUtterance(text))
+function splitSentences(text){
+sentences = text
+.replace(/\n/g," ")
+.match(/[^\.!\?]+[\.!\?]+/g) || [text]
 }
 
-/* GOOGLE TRANSLATE */
+function renderSentences(){
+const box=document.getElementById("readerEN")
+box.innerHTML=""
+
+sentences.forEach((s,i)=>{
+const span=document.createElement("span")
+span.innerText=s.trim()
+span.onclick=()=>selectSentence(i)
+box.appendChild(span)
+})
+}
+
+function selectSentence(i){
+const spans=document.querySelectorAll("#readerEN span")
+spans.forEach(s=>s.classList.remove("active"))
+spans[i].classList.add("active")
+
+translate(sentences[i])
+}
+
 function translate(text){
+document.getElementById("readerID").innerText="Translating..."
+
 fetch("https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=id&dt=t&q="+encodeURIComponent(text))
 .then(r=>r.json())
 .then(data=>{
@@ -173,9 +198,13 @@ let hasil=""
 data[0].forEach(b=>hasil+=b[0])
 document.getElementById("readerID").innerText=hasil
 })
-.catch(()=>{
-document.getElementById("readerID").innerText="Translation failed"
-})
+}
+
+function hear(){
+const active=document.querySelector("#readerEN span.active")
+if(!active)return
+speechSynthesis.cancel()
+speechSynthesis.speak(new SpeechSynthesisUtterance(active.innerText))
 }
 </script>
 
