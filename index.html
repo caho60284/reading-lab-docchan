@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>Reading Lab</title>
+<title>Reading Lab DocChan</title>
 
 <style>
 *{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
@@ -18,67 +18,103 @@ box-shadow:0 2px 6px rgba(0,0,0,.08);
 z-index:10
 }
 
-h1{margin:0;font-size:20px}
-.labver{font-size:12px;color:#888;margin-top:2px}
+h1{margin:0;font-size:22px}
+.lab{font-size:12px;color:#888;margin-top:2px}
 
-.container{
-padding:14px;
-}
+main{padding:14px}
 
 textarea{
 width:100%;
-height:260px;
-border:none;
+height:220px;
 border-radius:12px;
+border:1px solid #ddd;
 padding:12px;
 font-size:15px;
-resize:none;
-outline:none;
-box-shadow:0 2px 6px rgba(0,0,0,.08);
-background:#fff;
+resize:vertical;
+background:#fff
 }
 
 .translateBtn{
 margin-top:12px;
 width:100%;
+border:none;
+border-radius:12px;
+padding:12px;
+font-size:16px;
 background:#14b8a6;
+color:#fff
+}
+
+/* modal */
+.modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.35);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:50
+}
+
+.modal-box{
+background:#fff;
+width:92%;
+max-width:420px;
+border-radius:16px;
+padding:16px;
+position:relative
+}
+
+.modal-close{
+position:absolute;
+top:8px;
+right:10px;
+font-size:18px;
+cursor:pointer;
+color:#888
+}
+
+.modal-close:hover{color:#000}
+
+#readerTitle{
+font-weight:700;
+margin-bottom:6px;
+font-size:17px
+}
+
+#readerIPA{
+color:#26a69a;
+font-size:14px;
+line-height:1.4
+}
+
+#readerMeaning{
+margin-top:8px;
+font-size:15px;
+line-height:1.5
+}
+
+.modal-actions{
+display:flex;
+gap:8px;
+margin-top:14px
+}
+
+.audio{
+flex:1;
+background:#27ae60;
 color:#fff;
 border:none;
 border-radius:10px;
-padding:12px;
-font-size:15px;
+padding:10px
 }
 
-.resultBox{
-margin-top:14px;
-background:#fff;
-border-radius:12px;
-padding:14px;
-box-shadow:0 2px 6px rgba(0,0,0,.08);
-white-space:pre-wrap;
-line-height:1.5;
-}
-
-/* MODAL CENTER FIX */
-.modal{
-display:none;
-position:fixed;
-top:0;left:0;right:0;bottom:0;
-background:rgba(0,0,0,.4);
-z-index:9999;
-}
-
-.modal-content{
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-width:92%;
-max-width:520px;
-background:#fff;
-border-radius:14px;
-padding:16px;
-box-shadow:0 10px 30px rgba(0,0,0,.2);
+.cancel{
+flex:1;
+background:#ccc;
+border:none;
+border-radius:10px;
+padding:10px
 }
 </style>
 </head>
@@ -86,61 +122,59 @@ box-shadow:0 10px 30px rgba(0,0,0,.2);
 <body>
 
 <header>
-  <h1>📘 Reading Lab</h1>
-  <div class="labver">LAB VERSION</div>
+<h1>📘 Reading Lab</h1>
+<div class="lab">LAB VERSION</div>
 </header>
 
-<div class="container">
+<main>
+<textarea id="readingInput" placeholder="Paste or type English text here..."></textarea>
+<button class="translateBtn" onclick="openReader()">Translate</button>
+</main>
 
-<textarea id="inputText" placeholder="Paste or type long English text here..."></textarea>
+<!-- MODAL -->
+<div id="readerModal" class="modal">
+  <div class="modal-box">
 
-<button class="translateBtn" onclick="translateText()">Translate</button>
+    <div class="modal-close" onclick="closeReader()">✕</div>
 
-<div id="result" class="resultBox"></div>
+    <div id="readerTitle"></div>
+    <div id="readerIPA"></div>
+    <div id="readerMeaning"></div>
 
-</div>
+    <div class="modal-actions">
+      <button class="audio" onclick="hearReader()">Hear</button>
+      <button class="cancel" onclick="closeReader()">Close</button>
+    </div>
 
-<!-- MODAL (future use if needed) -->
-<div class="modal" id="checkerModal">
-  <div class="modal-content">
-    <div id="checkWord"></div>
-    <div id="checkIPA"></div>
-    <div id="checkMeaning"></div>
-    <div id="checkResult"></div>
   </div>
 </div>
 
 <script>
-/* ===== TRANSLATOR (ASLI DARI APP KAMU) ===== */
-/* tidak diubah algoritma */
-function translateText(){
-  const text = document.getElementById("inputText").value.trim()
-  if(!text){
-    document.getElementById("result").innerText = ""
-    return
-  }
+function openReader(){
+  const text = document.getElementById("readingInput").value.trim()
+  if(!text) return
 
-  // translator sederhana stabil kamu
-  const lines = text.split("\n")
-  let out = ""
+  document.getElementById("readerTitle").innerText = text
 
-  for(let l of lines){
-    out += translateLine(l) + "\n\n"
-  }
+  // IPA (pakai fungsi vocab kamu)
+  document.getElementById("readerIPA").innerText = getIPA(text) || ""
 
-  document.getElementById("result").innerText = out.trim()
+  // TERJEMAHAN INDONESIA (pakai translator kamu yg lama)
+  document.getElementById("readerMeaning").innerText = "Arti: " + (getMeaning(text) || "")
+
+  document.getElementById("readerModal").style.display="flex"
 }
 
-function translateLine(line){
-  // ini placeholder algoritma lama kamu
-  // (di app kamu translator sudah stabil)
-  // di reading-lab kita panggil sama
-  return fakeTranslate(line)
+function closeReader(){
+  document.getElementById("readerModal").style.display="none"
 }
 
-/* SIMULASI translator lama kamu */
-function fakeTranslate(t){
-  return t
+function hearReader(){
+  const text = document.getElementById("readingInput").value
+  if(!text) return
+  const u = new SpeechSynthesisUtterance(text)
+  u.lang="en-US"
+  speechSynthesis.speak(u)
 }
 </script>
 
