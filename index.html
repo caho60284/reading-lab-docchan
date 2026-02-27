@@ -1,1 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Reading Lab DocChan</title>
 
+<style>
+*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+body{margin:0;background:#f3f5f9}
+
+header{
+position:sticky;top:0;background:#fff;
+padding:14px;box-shadow:0 2px 6px rgba(0,0,0,.08);
+z-index:10
+}
+h1{margin:0;font-size:22px}
+.lab{font-size:12px;color:#888;margin-top:2px}
+
+.main{
+padding:14px;
+}
+
+textarea{
+width:100%;
+border:none;
+border-radius:12px;
+padding:14px;
+font-size:16px;
+resize:vertical;
+min-height:180px;
+box-shadow:0 2px 6px rgba(0,0,0,.08);
+}
+
+button{
+border:none;border-radius:10px;
+padding:12px 16px;
+font-size:15px;
+cursor:pointer
+}
+
+.translateBtn{
+margin-top:10px;
+background:#14b8a6;
+color:#fff;
+width:100%;
+}
+
+/* modal */
+.modal{
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.35);
+justify-content:center;
+align-items:center;
+z-index:100
+}
+
+.modal-content{
+background:#fff;
+border-radius:14px;
+padding:16px;
+width:92%;
+max-width:420px
+}
+
+#checkWord{font-size:22px;font-weight:700}
+#checkIPA{color:#26a69a;margin-top:2px}
+#checkMeaning{margin-top:6px}
+#checkResult{margin-top:8px;font-weight:600}
+
+.modal-actions{
+display:flex;
+gap:8px;
+margin-top:12px
+}
+
+.audio{background:#27ae60;color:#fff;flex:1}
+.cancel{background:#ccc;color:#333;flex:1}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>📘 Reading Lab</h1>
+<div class="lab">LAB VERSION</div>
+</header>
+
+<div class="main">
+<textarea id="textInput" placeholder="Paste or type English text here..."></textarea>
+<button class="translateBtn" onclick="openChecker()">Translate</button>
+</div>
+
+<!-- CHECKER MODAL (TRANSLATOR ENGINE ASLI) -->
+<div class="modal" id="checkerModal">
+<div class="modal-content">
+
+<div id="checkWord"></div>
+<div id="checkIPA"></div>
+<div id="checkMeaning"></div>
+<div id="checkResult"></div>
+
+<div class="modal-actions">
+<button class="audio" onclick="hearWord()">Hear</button>
+<button class="cancel" onclick="closeChecker()">Close</button>
+</div>
+
+</div>
+</div>
+
+<script>
+
+/* ===== TRANSLATOR ENGINE LAMA (TIDAK DIUBAH) ===== */
+
+function getIPA(text){
+text=text.toLowerCase().trim()
+const words=text.split(/\s+/)
+let out=[]
+words.forEach(w=>{
+out.push(dictIPA[w]||w)
+})
+return out.join(" ")
+}
+
+function getMeaning(text){
+text=text.toLowerCase().trim()
+const words=text.split(/\s+/)
+let out=[]
+words.forEach(w=>{
+out.push(dictMean[w]||w)
+})
+return out.join(" ")
+}
+
+/* ===== DICTIONARY (AMBIL DARI DATA LAMA KAMU) ===== */
+const dictIPA = JSON.parse(localStorage.getItem("ipaDict")||"{}")
+const dictMean = JSON.parse(localStorage.getItem("meanDict")||"{}")
+
+/* ===== OPEN TRANSLATOR ===== */
+function openChecker(){
+const text=document.getElementById("textInput").value.trim()
+if(!text) return
+
+document.getElementById("checkWord").innerText=text
+document.getElementById("checkIPA").innerText=getIPA(text)
+document.getElementById("checkMeaning").innerText="Arti: "+getMeaning(text)
+document.getElementById("checkResult").innerHTML=""
+
+checkerModal.style.display="flex"
+}
+
+function closeChecker(){
+checkerModal.style.display="none"
+}
+
+/* ===== SPEAK ===== */
+function hearWord(){
+const t=document.getElementById("checkWord").innerText
+if(!t) return
+const u=new SpeechSynthesisUtterance(t)
+u.lang="en-US"
+speechSynthesis.speak(u)
+}
+
+</script>
+</body>
+</html>
