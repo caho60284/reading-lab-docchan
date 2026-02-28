@@ -685,16 +685,12 @@ document.getElementById("ocrLoad").style.display=v?"flex":"none"
 function highlightPhrases(text){
   let out = text
 
-  PHRASES.forEach((p,i)=>{
-    const words = p.split(" ")
-    const first = words[0]
-    const rest = words.slice(1).join("\\s+")
-
-    const verbForms = `${first}|${first}s|${first}ed|${first}ing`
-    const regex = new RegExp(`\\b(${verbForms})\\s+${rest}\\b`,"gi")
+  PHRASES.forEach((ph,i)=>{
+    const escaped = ph.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")
+    const regex = new RegExp(`\\b${escaped}\\b`,"gi")
 
     out = out.replace(regex,
-      `<span class="phrase" data-p="${i}" style="text-decoration:underline;color:#e53935;font-weight:600">$&</span>`
+      `<span class="phrase" data-p="${i}" style="text-decoration:underline;color:#e53935;font-weight:600;cursor:pointer">$&</span>`
     )
   })
 
