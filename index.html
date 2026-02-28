@@ -45,6 +45,30 @@ background:#26a69a;
 color:#fff
 }
 
+.btnRow{
+display:flex;
+gap:12px;
+margin-top:12px;
+}
+
+.btn{
+flex:1;
+border:none;
+border-radius:14px;
+padding:14px;
+font-size:17px;
+}
+
+.readBtn{
+background:#26a69a;
+color:#fff;
+}
+
+.clearBtn{
+background:#e6e6e6;
+color:#2b6cb0;
+}
+
 .modal{
 position:fixed;
 inset:0;
@@ -108,17 +132,9 @@ line-height:1.55
 <div class="main">
 <textarea id="inputText" placeholder="Paste English text..."></textarea>
 
-<div style="display:flex;gap:8px;margin-top:10px">
-  <button onclick="clearText()" style="
-    flex:1;
-    border:none;
-    border-radius:14px;
-    padding:14px;
-    font-size:17px;
-    background:#e0e0e0;
-  ">✕ Clear</button>
-
-  <button class="readBtn" onclick="openReader()" style="flex:2">Read</button>
+<div class="btnRow">
+  <button class="btn clearBtn" onclick="clearText()">✕ Clear</button>
+  <button class="btn readBtn" onclick="openReader()">Read</button>
 </div>
 
 </div>
