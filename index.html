@@ -530,13 +530,17 @@ const wrap=document.createElement("div")
 wrap.className="sentence"
 wrap.innerHTML = highlightPhrases(s.trim())
 
-wrap.querySelectorAll(".phrase").forEach(el=>{
-  el.onclick = (e)=>{
+wrap.onclick = (e)=>{
+  const phraseEl = e.target.closest(".phrase")
+  if(phraseEl){
     e.stopPropagation()
-    const p = el.dataset.p
-    showPhrase(p)
+    showPhrase(phraseEl.dataset.p)
+    return
   }
-})
+
+  selectSentence(i)
+  speakSentence(i)
+}
 
 const trans=document.createElement("div")
 trans.className="translation"
