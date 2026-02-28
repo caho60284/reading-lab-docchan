@@ -187,25 +187,26 @@ background:linear-gradient(135deg,#7b7be8,#5a5ad6);
 }
 
 .voiceBtn{
-flex:1 1 0;
-min-width:0;
-background:linear-gradient(135deg,#ff4b4b,#d32f2f);
-gap:8px;
-padding:0 12px;
-display:flex;
-align-items:center;
-justify-content:center;
+  flex:1 1 0;
+  min-width:0;
+  position:relative;
+  background:linear-gradient(135deg,#ff4b4b,#d32f2f);
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-weight:600;
+  overflow:hidden;
 }
 
 .voiceBtn select{
-flex:1;
-min-width:0;
-border:none;
-background:transparent;
-color:#fff;
-font-size:16px;
-outline:none;
-appearance:none;
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  opacity:0;
+  cursor:pointer;
 }
 </style>
 </head>
