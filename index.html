@@ -7,7 +7,7 @@
 
 <style>
 body{
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-family:system-ui;
   margin:0;
   background:#f4f6f8;
 }
@@ -18,18 +18,7 @@ header{
   box-shadow:0 2px 6px rgba(0,0,0,.08);
 }
 
-header h1{
-  margin:0;
-  font-size:22px;
-}
-
-header small{
-  color:#777;
-}
-
-.main{
-  padding:16px;
-}
+.main{padding:16px}
 
 textarea{
   width:100%;
@@ -54,24 +43,12 @@ textarea{
   padding:14px;
   font-size:16px;
   color:white;
-  cursor:pointer;
 }
 
-.btnClear{
-  background:linear-gradient(135deg,#7b5cff,#5c6cff);
-}
-
-.btnRead{
-  background:linear-gradient(135deg,#3aa89c,#2e8b80);
-}
-
-.btnImport{
-  background:linear-gradient(135deg,#4a90e2,#3b78c5);
-}
-
-.btnStop{
-  background:linear-gradient(135deg,#ff5f5f,#e53935);
-}
+.btnClear{background:linear-gradient(135deg,#7b5cff,#5c6cff)}
+.btnRead{background:linear-gradient(135deg,#2bb673,#1f8f58)}
+.btnImport{background:linear-gradient(135deg,#4a90e2,#3b78c5)}
+.btnStop{background:linear-gradient(135deg,#ff5f5f,#e53935)}
 
 .modal{
   position:fixed;
@@ -93,8 +70,17 @@ textarea{
 .readerText{
   max-height:60vh;
   overflow:auto;
-  margin-top:10px;
   line-height:1.6;
+}
+
+.sent{
+  padding:6px;
+  border-radius:8px;
+  margin-bottom:6px;
+}
+
+.sent.active{
+  background:#e8f2ff;
 }
 
 #voiceSelect{
@@ -102,6 +88,19 @@ textarea{
   padding:10px;
   border-radius:10px;
   border:1px solid #ddd;
+}
+
+.popup{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:white;
+  border-radius:12px;
+  padding:12px 16px;
+  box-shadow:0 4px 12px rgba(0,0,0,.2);
+  display:none;
+  max-width:90%;
 }
 </style>
 </head>
@@ -114,7 +113,6 @@ textarea{
 </header>
 
 <div class="main">
-
 <textarea id="inputText" placeholder="Paste English text..."></textarea>
 
 <div class="btnRow">
@@ -124,7 +122,6 @@ textarea{
 </div>
 
 <input type="file" id="imgInput" accept="image/*" style="display:none">
-
 </div>
 
 <div id="ocrLoad" style="display:none;padding:10px;text-align:center;">
@@ -135,7 +132,7 @@ Scanning text...
 <div class="box">
 
 <div style="display:flex;gap:10px;margin-bottom:10px">
-  <button class="btn btnRead" onclick="playAll()">🔊 Play All</button>
+  <button class="btn btnRead" onclick="playAll()">🔊 Play</button>
   <button class="btn btnStop" onclick="stopSpeak()">⏹ Stop</button>
   <select id="voiceSelect"></select>
 </div>
@@ -145,82 +142,96 @@ Scanning text...
 </div>
 </div>
 
+<div id="popup" class="popup"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
 
 <script>
-/* ===== TEXT ===== */
+/* ===== BASIC ===== */
 function clearText(){
-  document.getElementById("inputText").value=""
+  inputText.value=""
 }
 
+/* ===== READER SPLIT SENTENCE ===== */
 function openReader(){
-  const text=document.getElementById("inputText").value.trim()
+  const text=inputText.value.trim()
   if(!text) return
-  document.getElementById("readerText").innerText=text
-  document.getElementById("readerModal").style.display="flex"
+
+  readerText.innerHTML=""
+  const sentences=text.match(/[^\.!\?]+[\.!\?]+/g) || [text]
+
+  sentences.forEach(s=>{
+    const div=document.createElement("div")
+    div.className="sent"
+    div.textContent=s.trim()
+    div.onclick=()=>clickSentence(div)
+    readerText.appendChild(div)
+  })
+
+  readerModal.style.display="flex"
 }
 
-/* ===== SPEECH ENGINE ===== */
-let synth=window.speechSynthesis
+/* ===== CLICK SENTENCE ===== */
+function clickSentence(el){
+  document.querySelectorAll(".sent").forEach(s=>s.classList.remove("active"))
+  el.classList.add("active")
+
+  speak(el.textContent)
+
+  // pseudo arti demo
+  popup.innerText="Arti: "+translate(el.textContent)
+  popup.style.display="block"
+}
+
+/* ===== DEMO TRANSLATE ===== */
+function translate(t){
+  return t
+}
+
+/* ===== SPEECH ===== */
+let synth=speechSynthesis
 let voices=[]
 
 function loadVoices(){
-  const sel=document.getElementById("voiceSelect")
-  if(!sel) return
-
   voices=synth.getVoices()
-
-  // iOS belum load
   if(!voices.length){
     setTimeout(loadVoices,200)
     return
   }
 
-  sel.innerHTML='<option value="">Default Voice</option>'
-
-  // prioritaskan English
-  const sorted=[
-    ...voices.filter(v=>v.lang.startsWith("en")),
-    ...voices.filter(v=>!v.lang.startsWith("en"))
-  ]
-
-  sorted.forEach((v,i)=>{
+  voiceSelect.innerHTML=""
+  voices.forEach((v,i)=>{
     const opt=document.createElement("option")
     opt.value=i
     opt.textContent=v.name+" ("+v.lang+")"
-    sel.appendChild(opt)
+    voiceSelect.appendChild(opt)
   })
-
-  // auto pilih female english jika ada
-  const femaleIndex=sorted.findIndex(v=>/female|woman|siri/i.test(v.name) && v.lang.startsWith("en"))
-  sel.value=femaleIndex>=0?femaleIndex:0
 }
 
 speechSynthesis.onvoiceschanged=loadVoices
 setTimeout(loadVoices,300)
 
-/* ===== PLAY ===== */
-function playAll(){
+function speak(text){
   stopSpeak()
+  const u=new SpeechSynthesisUtterance(text)
+  const v=voices[voiceSelect.value]
+  if(v) u.voice=v
+  synth.speak(u)
+}
 
-  const text=document.getElementById("readerText").innerText
-  if(!text) return
-
-  const sel=document.getElementById("voiceSelect")
-  const utter=new SpeechSynthesisUtterance(text)
-
-  const sorted=[
-    ...voices.filter(v=>v.lang.startsWith("en")),
-    ...voices.filter(v=>!v.lang.startsWith("en"))
-  ]
-
-  if(sel.value!==""){
-    utter.voice=sorted[sel.value]
+function playAll(){
+  const all=[...document.querySelectorAll(".sent")]
+  let i=0
+  function next(){
+    if(i>=all.length) return
+    clickSentence(all[i])
+    const u=new SpeechSynthesisUtterance(all[i].textContent)
+    const v=voices[voiceSelect.value]
+    if(v) u.voice=v
+    u.onend=()=>{i++;next()}
+    synth.speak(u)
   }
-
-  utter.rate=0.95
-  utter.pitch=1
-  synth.speak(utter)
+  next()
 }
 
 function stopSpeak(){
@@ -228,21 +239,16 @@ function stopSpeak(){
 }
 
 /* ===== OCR ===== */
-document.getElementById("imgInput").addEventListener("change",async e=>{
-  const file=e.target.files[0]
-  if(!file) return
+imgInput.addEventListener("change",async e=>{
+  const f=e.target.files[0]
+  if(!f) return
 
-  document.getElementById("ocrLoad").style.display="block"
+  ocrLoad.style.display="block"
+  const {data:{text}}=await Tesseract.recognize(f,"eng")
+  ocrLoad.style.display="none"
 
-  const {data:{text}}=await Tesseract.recognize(file,"eng")
-
-  document.getElementById("ocrLoad").style.display="none"
-
-  if(text.trim()){
-    document.getElementById("inputText").value=text.trim()
-  }
+  if(text.trim()) inputText.value=text.trim()
 })
 </script>
-
 </body>
 </html>
