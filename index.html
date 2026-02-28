@@ -153,23 +153,26 @@ const PHRASES = {
 
 /* ===== VOICES ===== */
 function loadVoices(){
-  const select = document.getElementById("voiceSelect");
-  if(!select) return;
-
-  const voices = speechSynthesis.getVoices();
+  const sel = document.getElementById("voiceSelect")
+  const voices = speechSynthesis.getVoices()
 
   if(!voices.length){
-    select.innerHTML = '<option>No voices</option>';
-    return;
+    setTimeout(loadVoices, 200) // tunggu iOS load voices
+    return
   }
 
-  select.innerHTML = "";
+  sel.innerHTML = '<option value="">Default Voice</option>'
 
   voices.forEach((v,i)=>{
-    const opt = document.createElement("option");
-    opt.value = i;
-    opt.textContent = `${v.name} (${v.lang})`;
-    select.appendChild(opt);
+    const o = document.createElement("option")
+    o.value = i
+    o.textContent = v.name + " (" + v.lang + ")"
+    sel.appendChild(o)
+  })
+}
+
+window.speechSynthesis.onvoiceschanged = loadVoices
+loadVoices()
   });
 
   // pilih default English kalau ada
