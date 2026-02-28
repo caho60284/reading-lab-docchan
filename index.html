@@ -308,6 +308,21 @@ sentences = text
 .match(/[^\.!\?]+[\.!\?]+/g) || [text]
 }
 
+const PHRASES = [
+{base:"take care", forms:["take","takes","took","taking","taken"], tail:"care"},
+{base:"deal with", forms:["deal","deals","dealt","dealing"], tail:"with"},
+{base:"turn out", forms:["turn","turns","turned","turning"], tail:"out"},
+{base:"give up", forms:["give","gives","gave","giving","given"], tail:"up"},
+{base:"carry on", forms:["carry","carries","carried","carrying"], tail:"on"},
+{base:"find out", forms:["find","finds","found","finding"], tail:"out"},
+{base:"work out", forms:["work","works","worked","working"], tail:"out"},
+{base:"look after", forms:["look","looks","looked","looking"], tail:"after"},
+{base:"come up with", forms:["come","comes","came","coming"], tail:"up with"},
+{base:"make up", forms:["make","makes","made","making"], tail:"up"}
+]
+
+function renderSentences(sentences){
+
 function renderSentences(){
 const box=document.getElementById("reader")
 box.innerHTML=""
