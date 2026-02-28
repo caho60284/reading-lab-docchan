@@ -329,16 +329,10 @@ sentences.forEach((s,i)=>{
 const wrap=document.createElement("div")
 wrap.className="sentence"
 wrap.innerHTML = highlightPhrases(s.trim())
-wrap.onclick = (e)=>{
-  const ph = e.target.closest(".phrase")
-  if(ph){
-    const p = ph.dataset.p
-    alert(PHRASES[p].base)
-    return
-  }
+wrap.addEventListener("click", ()=>{
   selectSentence(i)
   speakSentence(i)
-}
+})
 
 const trans=document.createElement("div")
 trans.className="translation"
