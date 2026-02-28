@@ -138,6 +138,27 @@ animation:spin 1s linear infinite
 }
 
 @keyframes spin{to{transform:rotate(360deg)}}
+
+.voiceSelect{
+flex:1;
+height:54px;
+border:none;
+border-radius:14px;
+padding:0 12px;
+font-size:16px;
+color:#fff;
+background:linear-gradient(135deg,#ff4b4b,#d32f2f);
+appearance:none;
+display:flex;
+align-items:center;
+}
+
+.voiceSelect option{
+color:#000;
+background:#fff;
+}
+
+
 </style>
 </head>
 
@@ -169,10 +190,25 @@ animation:spin 1s linear infinite
 <div class="box">
 
 <div style="display:flex;gap:10px;margin-bottom:10px">
+
 <button class="btn btnRead" onclick="playAll()">🔊 Play All</button>
+
 <button class="btn btnClear" onclick="stopSpeak()">⏹ Stop</button>
 
-<select id="voiceSelect" style="flex:1;border-radius:12px;border:1px solid #ddd;padding:8px"></select>
+<div style="flex:1;position:relative">
+<span style="
+position:absolute;
+left:12px;
+top:50%;
+transform:translateY(-50%);
+color:#fff;
+font-size:18px;
+pointer-events:none;
+">🎙️</span>
+
+<select id="voiceSelect" class="voiceSelect" style="padding-left:38px"></select>
+</div>
+
 </div>
 
 <div class="closeX" onclick="closeReader()">✕</div>
