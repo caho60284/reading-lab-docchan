@@ -321,6 +321,17 @@ sentences = text
 .match(/[^\.!\?]+[\.!\?]+/g) || [text]
 }
 
+function readText(){
+  const input = document.getElementById("inputText")
+  if(!input) return
+
+  const text = input.value.trim()
+  if(!text) return
+
+  splitSentences(text)
+  renderSentences()
+}
+
 function renderSentences(){
 const box=document.getElementById("reader")
 box.innerHTML=""
