@@ -167,6 +167,11 @@ color:#fff;
 <div class="modal" id="readerModal">
 <div class="box">
 
+<div style="display:flex;gap:10px;margin-bottom:10px">
+  <button class="btn btnRead" onclick="playAll()">🔊 Play All</button>
+  <button class="btn btnClear" onclick="stopSpeak()">⏹ Stop</button>
+</div>
+
 <div class="closeX" onclick="closeReader()">✕</div>
 
 <div id="reader"></div>
@@ -205,7 +210,10 @@ sentences.forEach((s,i)=>{
 const wrap=document.createElement("div")
 wrap.className="sentence"
 wrap.innerText=s.trim()
-wrap.onclick=()=>selectSentence(i)
+wrap.onclick=()=>{
+  selectSentence(i)
+  speak(sentences[i])
+}
 
 const trans=document.createElement("div")
 trans.className="translation"
@@ -241,6 +249,50 @@ function clearText(){
   el.value = "";
   el.focus();
 }
+
+let synth = window.speechSynthesis
+let speakingAll = false
+
+function speak(text){
+  if(!text) return
+  synth.cancel()
+
+  const utter = new SpeechSynthesisUtterance(text)
+  utter.lang = "en-US"
+  utter.rate = 0.9
+  synth.speak(utter)
+}
+
+function stopSpeak(){
+  speakingAll = false
+  synth.cancel()
+}
+
+function playAll(){
+  if(!sentences.length) return
+  speakingAll = true
+  synth.cancel()
+
+  let i = 0
+
+  function next(){
+    if(!speakingAll || i >= sentences.length) return
+
+    const utter = new SpeechSynthesisUtterance(sentences[i])
+    utter.lang = "en-US"
+    utter.rate = 0.9
+
+    utter.onend = ()=>{
+      i++
+      next()
+    }
+
+    synth.speak(utter)
+  }
+
+  next()
+}
+
 
 </script>
 
