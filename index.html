@@ -261,206 +261,17 @@ let currentIndex = -1
 let voices=[]
 
 const PHRASES = [
-“show up”,
-“come back”,
-“go back”,
-“head out”,
-“hang out”,
-“carry on”,
-“move on”,
-“keep going”,
-“hold on”,
-“wait up”,
-“sit down”,
-“stand up”,
-“wake up”,
-“get up”,
-“lie down”,
-“calm down”,
-“slow down”,
-“hurry up”,
-“come in”,
-“go out”,
-“come over”,
-“drop by”,
-“stop by”,
-“check in”,
-“check out”,
-“look around”,
-“look for”,
-“look at”,
-“look after”,
-“take care of”,
-“deal with”,
-“work on”,
-“work out”,
-“figure out”,
-“find out”,
-“point out”,
-“bring up”,
-“bring back”,
-“bring in”,
-“pick up”,
-“pick out”,
-“put on”,
-“take off”,
-“put down”,
-“take away”,
-“give back”,
-“give up”,
-“give in”,
-“give away”,
-“hand over”,
-“hand out”,
-“turn on”,
-“turn off”,
-“turn up”,
-“turn down”,
-“turn around”,
-“turn out”,
-“set up”,
-“set out”,
-“set off”,
-“run into”,
-“run out”,
-“run away”,
-“break down”,
-“break up”,
-“break in”,
-“break out”,
-“make up”,
-“make out”,
-“make sure”,
-“make sense”,
-“take over”,
-“take up”,
-“take in”,
-“take out”,
-“come across”,
-“come up”,
-“come up with”,
-“come along”,
-“come true”,
-“go on”,
-“go through”,
-“go over”,
-“go ahead”,
-“go off”,
-“get in”,
-“get out”,
-“get back”,
-“get over”,
-“get along”,
-“get away”,
-“get together”,
-“get ready”,
-“get started”,
-“keep up”,
-“keep on”,
-“keep away”,
-“keep in touch”
+{base:"take care", forms:["take","takes","took","taking","taken"], tail:"care"},
+{base:"deal with", forms:["deal","deals","dealt","dealing"], tail:"with"},
+{base:"turn out", forms:["turn","turns","turned","turning"], tail:"out"},
+{base:"give up", forms:["give","gives","gave","giving","given"], tail:"up"},
+{base:"carry on", forms:["carry","carries","carried","carrying"], tail:"on"},
+{base:"find out", forms:["find","finds","found","finding"], tail:"out"},
+{base:"work out", forms:["work","works","worked","working"], tail:"out"},
+{base:"look after", forms:["look","looks","looked","looking"], tail:"after"},
+{base:"come up with", forms:["come","comes","came","coming"], tail:"up with"},
+{base:"make up", forms:["make","makes","made","making"], tail:"up"}
 ]
-
-const PHRASE_MEANING = {
-"show up": "muncul / datang",
-"come back": "kembali",
-"go back": "kembali",
-"head out": "pergi / berangkat",
-"hang out": "nongkrong",
-"carry on": "lanjutkan",
-"move on": "lanjut hidup / move on",
-"keep going": "teruskan",
-"hold on": "tunggu",
-"wait up": "tunggu sebentar",
-"sit down": "duduk",
-"stand up": "berdiri",
-"wake up": "bangun",
-"get up": "bangun dari tempat tidur",
-"lie down": "berbaring",
-"calm down": "tenang",
-"slow down": "perlambat",
-"hurry up": "cepat",
-"come in": "masuk",
-"go out": "keluar",
-"come over": "datang ke sini",
-"drop by": "mampir",
-"stop by": "singgah",
-"check in": "lapor / check-in",
-"check out": "check-out / keluar",
-"look around": "melihat sekeliling",
-"look for": "mencari",
-"look at": "melihat",
-"look after": "menjaga",
-"take care of": "merawat / mengurus",
-"deal with": "menangani",
-"work on": "mengerjakan",
-"work out": "berhasil / olahraga",
-"figure out": "memahami",
-"find out": "mengetahui",
-"point out": "menunjukkan",
-"bring up": "mengangkat topik",
-"bring back": "membawa kembali",
-"bring in": "membawa masuk",
-"pick up": "mengambil",
-"pick out": "memilih",
-"put on": "memakai",
-"take off": "melepas",
-"put down": "meletakkan",
-"take away": "membawa pergi",
-"give back": "mengembalikan",
-"give up": "menyerah",
-"give in": "mengalah",
-"give away": "memberikan gratis",
-"hand over": "menyerahkan",
-"hand out": "membagikan",
-"turn on": "menyalakan",
-"turn off": "mematikan",
-"turn up": "menaikkan",
-"turn down": "menurunkan / menolak",
-"turn around": "berbalik",
-"turn out": "ternyata",
-"set up": "menyiapkan",
-"set out": "berangkat",
-"set off": "memulai perjalanan",
-"run into": "bertemu tidak sengaja",
-"run out": "habis",
-"run away": "melarikan diri",
-"break down": "rusak / menangis",
-"break up": "putus",
-"break in": "membobol",
-"break out": "terjadi tiba-tiba",
-"make up": "berdamai / mengarang",
-"make out": "memahami / bercumbu",
-"make sure": "memastikan",
-"make sense": "masuk akal",
-"take over": "mengambil alih",
-"take up": "mulai menekuni",
-"take in": "memahami / menampung",
-"take out": "mengeluarkan",
-"come across": "menemukan tak sengaja",
-"come up": "muncul",
-"come up with": "menghasilkan ide",
-"come along": "ikut",
-"come true": "menjadi kenyataan",
-"go on": "terjadi / lanjut",
-"go through": "melewati",
-"go over": "meninjau",
-"go ahead": "silakan",
-"go off": "berbunyi / meledak",
-"get in": "masuk",
-"get out": "keluar",
-"get back": "kembali",
-"get over": "pulih",
-"get along": "akur",
-"get away": "pergi / kabur",
-"get together": "berkumpul",
-"get ready": "bersiap",
-"get started": "mulai",
-"keep up": "mengikuti",
-"keep on": "teruskan",
-"keep away": "menjauh",
-"keep in touch": "tetap berhubungan"
-}
 
 function loadVoices(){
 voices = synth.getVoices()
@@ -530,17 +341,18 @@ const wrap=document.createElement("div")
 wrap.className="sentence"
 wrap.innerHTML = highlightPhrases(s.trim())
 
-wrap.onclick = (e)=>{
-  const phraseEl = e.target.closest(".phrase")
-  if(phraseEl){
+wrap.querySelectorAll(".phrase").forEach(el=>{
+  el.onclick = (e)=>{
     e.stopPropagation()
-    showPhrase(phraseEl.dataset.p)
-    return
+    const p = el.dataset.p
+    showPhrase(p)
   }
+})
 
+wrap.addEventListener("click", ()=>{
   selectSentence(i)
   speakSentence(i)
-}
+})
 
 const trans=document.createElement("div")
 trans.className="translation"
@@ -569,29 +381,6 @@ let hasil=""
 data[0].forEach(b=>hasil+=b[0])
 trans.innerText=hasil
 })
-}
-
-function translatePhrase(base){
-  const dict = {
-    "take care":"merawat / menjaga",
-    "deal with":"menghadapi",
-    "turn out":"ternyata",
-    "give up":"menyerah",
-    "carry on":"terus melanjutkan",
-    "find out":"mengetahui",
-    "work out":"berhasil / terpecahkan",
-    "look after":"merawat",
-    "come up with":"memikirkan / menemukan ide",
-    "make up":"mengarang / membuat"
-  }
-  return dict[base] || ""
-}
-
-function showPhrase(i){
-  const phrase = PHRASES[i]
-  if(!phrase) return
-  const arti = PHRASE_MEANING[phrase] || ""
-  alert(phrase + (arti ? " = " + arti : ""))
 }
 
 function clearText(){
@@ -683,31 +472,19 @@ document.getElementById("ocrLoad").style.display=v?"flex":"none"
 
 function highlightPhrases(text){
   let out = text
-  PHRASES.forEach((ph,i)=>{
-    const escaped = ph.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")
-    const regex = new RegExp(`\\b${escaped}\\b`,"gi")
+
+  PHRASES.forEach((p,i)=>{
+    const verbs = p.forms.join("|")
+    const regex = new RegExp(`\\b(${verbs})\\s+${p.tail}\\b`,"gi")
+
     out = out.replace(regex,
-      `<span class="phrase" data-p="${i}" style="text-decoration:underline;color:#e53935;font-weight:600;cursor:pointer">$&</span>`
+      `<span class="phrase" data-p="${i}" style="text-decoration:underline;color:#e53935;font-weight:600">$&</span>`
     )
   })
+
   return out
 }
 
-document.getElementById("reader").addEventListener("click",(e)=>{
-  const phraseEl = e.target.closest(".phrase")
-  if(phraseEl){
-    e.stopPropagation()
-    showPhrase(phraseEl.dataset.p)
-    return
-  }
-
-  const sentEl = e.target.closest(".sentence")
-  if(sentEl){
-    const idx = Array.from(sentEl.parentNode.children).indexOf(sentEl)
-    selectSentence(idx)
-    speakSentence(idx)
-  }
-})
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
