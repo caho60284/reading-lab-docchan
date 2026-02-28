@@ -461,8 +461,19 @@ function showOCR(v){
 document.getElementById("ocrLoad").style.display=v?"flex":"none"
 }
 
-function highlightPhrases(t){
-  return t
+function highlightPhrases(text){
+  let out = text
+
+  PHRASES.forEach((p,i)=>{
+    const verbs = p.forms.join("|")
+    const regex = new RegExp(`\\b(${verbs})\\s+${p.tail}\\b`,"gi")
+
+    out = out.replace(regex,
+      `<span class="phrase" data-p="${i}" style="text-decoration:underline;color:#e53935;font-weight:600">$&</span>`
+    )
+  })
+
+  return out
 }
 
 </script>
