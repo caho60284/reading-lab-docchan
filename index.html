@@ -686,11 +686,15 @@ function highlightPhrases(text){
   let out = text
 
   PHRASES.forEach((p,i)=>{
-    const escaped = p.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")
-    const regex = new RegExp(`\\b${escaped}\\b`,"gi")
+    const words = p.split(" ")
+    const first = words[0]
+    const rest = words.slice(1).join("\\s+")
+
+    const verbForms = `${first}|${first}s|${first}ed|${first}ing`
+    const regex = new RegExp(`\\b(${verbForms})\\s+${rest}\\b`,"gi")
 
     out = out.replace(regex,
-      `<span class="phrase" data-p="${i}" style="text-decoration:underline;color:#e53935;font-weight:600">${p}</span>`
+      `<span class="phrase" data-p="${i}" style="text-decoration:underline;color:#e53935;font-weight:600">$&</span>`
     )
   })
 
