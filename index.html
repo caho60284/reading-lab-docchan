@@ -158,48 +158,7 @@ color:#000;
 background:#fff;
 }
 
-.readerToolbar{
-display:flex;
-gap:12px;
-margin-bottom:14px;
-}
 
-.toolBtn{
-flex:1;
-height:56px;
-border-radius:16px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:17px;
-font-weight:600;
-color:#fff;
-border:none;
-}
-
-.playBtn{
-background:linear-gradient(135deg,#2ea79b,#1f8f84);
-}
-
-.stopBtn{
-background:linear-gradient(135deg,#7b7be8,#5a5ad6);
-}
-
-.voiceBtn{
-background:linear-gradient(135deg,#ff4b4b,#d32f2f);
-gap:8px;
-padding:0 12px;
-}
-
-.voiceBtn select{
-flex:1;
-border:none;
-background:transparent;
-color:#fff;
-font-size:16px;
-outline:none;
-appearance:none;
-}
 </style>
 </head>
 
@@ -230,14 +189,24 @@ appearance:none;
 <div class="modal" id="readerModal">
 <div class="box">
 
-<div class="readerToolbar">
+<div style="display:flex;gap:10px;margin-bottom:10px">
 
-<button class="toolBtn playBtn" onclick="playAll()">🔊 Play</button>
-<button class="toolBtn stopBtn" onclick="stopSpeak()">⏹ Stop</button>
+<button class="btn btnRead" onclick="playAll()">🔊 Play All</button>
 
-<div class="toolBtn voiceBtn">
-<span>🎙️</span>
-<select id="voiceSelect"></select>
+<button class="btn btnClear" onclick="stopSpeak()">⏹ Stop</button>
+
+<div style="flex:1;position:relative">
+<span style="
+position:absolute;
+left:12px;
+top:50%;
+transform:translateY(-50%);
+color:#fff;
+font-size:18px;
+pointer-events:none;
+">🎙️</span>
+
+<select id="voiceSelect" class="voiceSelect" style="padding-left:38px"></select>
 </div>
 
 </div>
