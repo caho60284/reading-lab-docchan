@@ -538,17 +538,6 @@ wrap.querySelectorAll(".phrase").forEach(el=>{
   }
 })
 
-wrap.addEventListener("click",(e)=>{
-  if(e.target.classList.contains("phrase")){
-    e.stopPropagation()
-    showPhrase(e.target.dataset.p)
-    return
-  }
-
-  selectSentence(i)
-  speakSentence(i)
-})
-
 const trans=document.createElement("div")
 trans.className="translation"
 trans.id="tr"+i
@@ -690,19 +679,31 @@ document.getElementById("ocrLoad").style.display=v?"flex":"none"
 
 function highlightPhrases(text){
   let out = text
-
   PHRASES.forEach((ph,i)=>{
     const escaped = ph.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")
     const regex = new RegExp(`\\b${escaped}\\b`,"gi")
-
     out = out.replace(regex,
       `<span class="phrase" data-p="${i}" style="text-decoration:underline;color:#e53935;font-weight:600;cursor:pointer">$&</span>`
     )
   })
-
   return out
 }
 
+document.getElementById("reader").addEventListener("click",(e)=>{
+  const phraseEl = e.target.closest(".phrase")
+  if(phraseEl){
+    e.stopPropagation()
+    showPhrase(phraseEl.dataset.p)
+    return
+  }
+
+  const sentEl = e.target.closest(".sentence")
+  if(sentEl){
+    const idx = Array.from(sentEl.parentNode.children).indexOf(sentEl)
+    selectSentence(idx)
+    speakSentence(idx)
+  }
+})
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
