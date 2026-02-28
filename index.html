@@ -538,7 +538,13 @@ wrap.querySelectorAll(".phrase").forEach(el=>{
   }
 })
 
-wrap.addEventListener("click", ()=>{
+wrap.addEventListener("click",(e)=>{
+  if(e.target.classList.contains("phrase")){
+    e.stopPropagation()
+    showPhrase(e.target.dataset.p)
+    return
+  }
+
   selectSentence(i)
   speakSentence(i)
 })
