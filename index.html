@@ -2,211 +2,137 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Reading Lab</title>
 
 <style>
-*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
-body{margin:0;background:#f3f5f9;color:#222}
-
-header{
-position:sticky;top:0;
-background:#fff;
-padding:16px 14px 10px;
-box-shadow:0 2px 6px rgba(0,0,0,.08);
-z-index:10
+body{
+font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto;
+margin:0;
+background:#f2f2f7;
 }
 
-h1{margin:0;font-size:22px}
-.lab{font-size:12px;color:#888;margin-top:2px}
+header{
+padding:18px;
+font-weight:700;
+font-size:22px;
+background:#fff;
+box-shadow:0 2px 6px rgba(0,0,0,.08);
+}
 
-.main{padding:14px}
+.main{
+padding:18px;
+}
 
 textarea{
 width:100%;
-min-height:200px;
+height:160px;
 border-radius:14px;
 border:1px solid #ddd;
-padding:14px;
+padding:12px;
 font-size:16px;
-line-height:1.5;
-resize:vertical;
-background:#fff
+resize:none;
 }
 
 .btnRow{
 display:flex;
-gap:12px;
-margin-top:12px;
+gap:10px;
+margin-top:14px;
 }
 
 .btn{
 flex:1;
-height:54px;
+padding:14px;
 border:none;
 border-radius:14px;
-font-size:17px;
 color:#fff;
-display:flex;
-align-items:center;
-justify-content:center;
-gap:8px;
-transition:transform .08s, box-shadow .08s;
+font-weight:600;
+font-size:16px;
 }
 
-.btn:active{
-transform:scale(.97);
-box-shadow:0 2px 6px rgba(0,0,0,.15) inset;
-}
-
-.btnRead{background:#26a69a}
-.btnClear{background:linear-gradient(135deg,#7b61ff,#5a8dee)}
-.btnImport{background:#2f86d6}
+.btnClear{background:linear-gradient(135deg,#7b6dff,#5a8bff)}
+.btnRead{background:linear-gradient(135deg,#29b6a6,#4caf50)}
+.btnImport{background:linear-gradient(135deg,#4a90e2,#357ae8)}
 
 .modal{
 position:fixed;
 inset:0;
-background:rgba(0,0,0,.35);
+background:rgba(0,0,0,.3);
 display:none;
 align-items:center;
 justify-content:center;
-padding:18px
 }
 
 .box{
 background:#fff;
-width:100%;
-max-width:560px;
 border-radius:18px;
-padding:20px 18px 18px;
-position:relative;
-max-height:85vh;
-overflow:auto;
-box-shadow:0 10px 30px rgba(0,0,0,.15)
-}
-
-.closeX{
-position:absolute;
-top:10px;
-right:12px;
-font-size:20px;
-color:#999;
-cursor:pointer
-}
-
-.sentence{
-margin-bottom:12px;
-line-height:1.6;
-cursor:pointer;
-padding:6px 6px;
-border-radius:8px;
-transition:background .15s;
-}
-
-.sentence.active{background:#e0f2f1}
-.sentence.playing{background:#c8ede9}
-
-.translation{
-color:#26a69a;
-margin-top:6px;
-margin-bottom:10px;
-display:none;
-line-height:1.55
-}
-
-#ocrLoad{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.35);
-display:none;
-align-items:center;
-justify-content:center;
-z-index:50;
-color:#fff;
-font-size:18px;
-flex-direction:column;
-gap:10px
-}
-
-.spinner{
-width:36px;
-height:36px;
-border:4px solid rgba(255,255,255,.3);
-border-top:4px solid #fff;
-border-radius:50%;
-animation:spin 1s linear infinite
-}
-
-@keyframes spin{to{transform:rotate(360deg)}}
-
-.voiceSelect{
-flex:1;
-height:54px;
-border:none;
-border-radius:14px;
-padding:0 12px;
-font-size:16px;
-color:#fff;
-background:linear-gradient(135deg,#ff4b4b,#d32f2f);
-appearance:none;
-display:flex;
-align-items:center;
-}
-
-.voiceSelect option{
-color:#000;
-background:#fff;
+padding:18px;
+width:92%;
+max-width:520px;
 }
 
 .readerToolbar{
 display:flex;
-gap:12px;
+gap:10px;
 margin-bottom:14px;
 }
 
 .toolBtn{
-flex:1 1 0;
-min-width:0;
-height:56px;
-border-radius:16px;
+flex:1;
+padding:14px;
+border-radius:14px;
+border:none;
+color:#fff;
+font-weight:600;
+font-size:16px;
 display:flex;
 align-items:center;
 justify-content:center;
-font-size:17px;
-font-weight:600;
-color:#fff;
-border:none;
+gap:8px;
 }
 
-.playBtn{
-background:linear-gradient(135deg,#2ea79b,#1f8f84);
-}
-
-.stopBtn{
-background:linear-gradient(135deg,#7b7be8,#5a5ad6);
-}
+.playBtn{background:linear-gradient(135deg,#29b6a6,#4caf50)}
+.stopBtn{background:linear-gradient(135deg,#7b6dff,#5a8bff)}
 
 .voiceBtn{
-  flex:1 1 0;
-  min-width:0;
-  position:relative;
-  background:linear-gradient(135deg,#ff4b4b,#d32f2f);
-  border-radius:14px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#fff;
-  font-weight:600;
-  overflow:hidden;
+flex:1;
+position:relative;
+background:linear-gradient(135deg,#ff4b4b,#d32f2f);
+border-radius:14px;
+display:flex;
+align-items:center;
+justify-content:center;
+color:#fff;
+font-weight:600;
+overflow:hidden;
+}
+
+.voiceBtn span{
+pointer-events:none;
 }
 
 .voiceBtn select{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  opacity:0;
-  cursor:pointer;
+position:absolute;
+inset:0;
+width:100%;
+height:100%;
+opacity:0;
+cursor:pointer;
+}
+
+.sentence{
+margin:10px 0;
+padding:10px 12px;
+border-radius:12px;
+}
+
+.active{
+background:#cfe9e6;
+}
+
+.translation{
+color:#3c9c94;
+margin-top:6px;
 }
 
 .phrase{
@@ -215,16 +141,12 @@ text-decoration-color:#ff6b6b;
 text-decoration-thickness:2px;
 cursor:pointer;
 }
-
 </style>
 </head>
 
 <body>
 
-<header>
-<h1>📘 Reading Lab</h1>
-<div class="lab">LAB VERSION</div>
-</header>
+<header>📘 Reading Lab</header>
 
 <div class="main">
 <textarea id="inputText" placeholder="Paste English text..."></textarea>
@@ -238,66 +160,107 @@ cursor:pointer;
 <input type="file" id="imgInput" accept="image/*" style="display:none">
 </div>
 
-<div id="ocrLoad">
-<div class="spinner"></div>
-<div>Scanning text...</div>
-</div>
-
 <div class="modal" id="readerModal">
 <div class="box">
 
 <div class="readerToolbar">
-
-<button class="toolBtn playBtn" onclick="playAll()">🔊 Play</button>
+<button class="toolBtn playBtn" onclick="playAll()">🔊 Play All</button>
 <button class="toolBtn stopBtn" onclick="stopSpeak()">⏹ Stop</button>
 
-<div class="toolBtn voiceBtn">
-<span>🎙️Voice </span>
+<div class="voiceBtn">
+<span>🎙 Voice</span>
 <select id="voiceSelect"></select>
 </div>
-
 </div>
 
-<div class="closeX" onclick="closeReader()">✕</div>
-<div id="reader"></div>
+<div id="readerContent"></div>
 
 </div>
 </div>
 
 <script>
-let sentences=[]
-let synth = window.speechSynthesis
-let speakingAll = false
-let currentIndex = -1
+/* ===== PHRASES ===== */
+const PHRASES={
+"turn out":"ternyata",
+"deal with":"menangani",
+"give up":"menyerah",
+"carry on":"melanjutkan",
+"figure out":"memahami",
+"come up":"mengusulkan",
+"work out":"berhasil",
+"find out":"menemukan",
+"look after":"merawat",
+"take care of":"mengurus"
+}
+
+/* ===== DETECT PHRASES MULTI ===== */
+function detectPhrases(text){
+let result=text
+Object.keys(PHRASES).forEach(p=>{
+const re=new RegExp("\\b"+p+"\\b","gi")
+result=result.replace(re,
+`<span class="phrase" data-p="${p}">${p}</span>`)
+})
+return result
+}
+
+/* ===== TRANSLATE MOCK ===== */
+function translateSentence(s){
+return s
+.replace(/turn out/gi,"ternyata")
+.replace(/deal with/gi,"menangani")
+.replace(/give up/gi,"menyerah")
+.replace(/carry on/gi,"melanjutkan")
+.replace(/figure out/gi,"memahami")
+.replace(/come up/gi,"mengusulkan")
+.replace(/work out/gi,"berhasil")
+.replace(/find out/gi,"menemukan")
+.replace(/look after/gi,"merawat")
+.replace(/take care of/gi,"mengurus")
+}
+
+/* ===== RENDER ===== */
+function renderSentences(text){
+const container=document.getElementById("readerContent")
+container.innerHTML=""
+
+const sentences=text.match(/[^\.!\?]+[\.!\?]+/g)||[]
+
+sentences.forEach((s,i)=>{
+const div=document.createElement("div")
+div.className="sentence"
+div.dataset.i=i
+
+const en=document.createElement("div")
+en.innerHTML=detectPhrases(s.trim())
+
+const tr=document.createElement("div")
+tr.className="translation"
+tr.textContent=translateSentence(s.trim())
+
+div.appendChild(en)
+div.appendChild(tr)
+
+container.appendChild(div)
+})
+}
+
+/* ===== READER ===== */
+function openReader(){
+const txt=document.getElementById("inputText").value
+if(!txt.trim())return
+renderSentences(txt)
+document.getElementById("readerModal").style.display="flex"
+}
+
+/* ===== SPEECH ===== */
+let synth=window.speechSynthesis
 let voices=[]
 
-/* ===== PHRASES TEST ===== */
-const PHRASES = {
-"come up with":"mengemukakan",
-"take into account":"mempertimbangkan",
-"deal with":"menangani",
-"figure out":"memahami",
-"look forward to":"menantikan",
-"run out of":"kehabisan",
-"get along with":"rukun dengan",
-"make up for":"menebus",
-"turn out":"ternyata",
-"carry on":"melanjutkan"
-}
-
-
 function loadVoices(){
-voices = synth.getVoices()
+voices=synth.getVoices()
 const sel=document.getElementById("voiceSelect")
-if(!sel) return
-
-if(!voices.length){
-setTimeout(loadVoices,200)
-return
-}
-
-sel.innerHTML='<option value="">Default Voice</option>'
-
+sel.innerHTML=""
 voices.forEach((v,i)=>{
 const o=document.createElement("option")
 o.value=i
@@ -309,175 +272,38 @@ sel.appendChild(o)
 speechSynthesis.onvoiceschanged=loadVoices
 loadVoices()
 
-function getSelectedVoice(){
+function speak(text){
+const u=new SpeechSynthesisUtterance(text)
 const sel=document.getElementById("voiceSelect")
-if(!sel||sel.value==="") return null
-return voices[sel.value]
-}
-
-function openReader(){
-const text=document.getElementById("inputText").value.trim()
-if(!text)return
-splitSentences(text)
-renderSentences()
-document.getElementById("readerModal").style.display="flex"
-}
-
-function closeReader(){
-document.getElementById("readerModal").style.display="none"
-stopSpeak()
-}
-
-function splitSentences(text){
-sentences = text
-.replace(/\n/g," ")
-.match(/[^\.!\?]+[\.!\?]+/g) || [text]
-}
-
-function highlightPhrases(text){
-let result = text
-
-Object.keys(PHRASES).forEach(p=>{
-const re = new RegExp("\\b"+p+"\\b","gi")
-result = result.replace(re,
-`<span class="phrase" data-p="${p}">${p}</span>`
-)
-})
-
-return result
-}
-
-
-
-function renderSentences(){
-const box=document.getElementById("reader")
-box.innerHTML=""
-
-sentences.forEach((s,i)=>{
-const wrap=document.createElement("div")
-wrap.className="sentence"
-wrap.innerHTML = highlightPhrases(s.trim())
-wrap.onclick=()=>{
-selectSentence(i)
-speakSentence(i)
-}
-
-const trans=document.createElement("div")
-trans.className="translation"
-trans.id="tr"+i
-
-wrap.appendChild(trans)
-box.appendChild(wrap)
-})
-}
-
-function selectSentence(i){
-document.querySelectorAll(".sentence").forEach(s=>s.classList.remove("active"))
-document.querySelectorAll(".translation").forEach(t=>t.style.display="none")
-
-const sent=document.querySelectorAll(".sentence")[i]
-const trans=document.getElementById("tr"+i)
-
-sent.classList.add("active")
-trans.style.display="block"
-trans.innerText="Translating..."
-
-fetch("https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=id&dt=t&q="+encodeURIComponent(sentences[i]))
-.then(r=>r.json())
-.then(data=>{
-let hasil=""
-data[0].forEach(b=>hasil+=b[0])
-trans.innerText=hasil
-})
-}
-
-function clearText(){
-const el=document.getElementById("inputText")
-el.value=""
-el.focus()
-}
-
-function speakSentence(i){
-synth.cancel()
-currentIndex=i
-highlightPlaying(i)
-
-const utter=new SpeechSynthesisUtterance(sentences[i])
-utter.lang="en-US"
-utter.rate=0.9
-
-const v=getSelectedVoice()
-if(v) utter.voice=v
-
-utter.onend=()=>removePlaying()
-
-synth.speak(utter)
-}
-
-function highlightPlaying(i){
-removePlaying()
-document.querySelectorAll(".sentence")[i].classList.add("playing")
-}
-
-function removePlaying(){
-document.querySelectorAll(".sentence").forEach(s=>s.classList.remove("playing"))
-}
-
-function stopSpeak(){
-speakingAll=false
-synth.cancel()
-removePlaying()
+if(sel.value)u.voice=voices[sel.value]
+synth.speak(u)
 }
 
 function playAll(){
-if(!sentences.length)return
-speakingAll=true
-synth.cancel()
+const s=document.querySelectorAll(".sentence")
 let i=0
-
 function next(){
-if(!speakingAll||i>=sentences.length){removePlaying();return}
-
-highlightPlaying(i)
-
-const utter=new SpeechSynthesisUtterance(sentences[i])
-utter.lang="en-US"
-utter.rate=0.9
-
-const v=getSelectedVoice()
-if(v) utter.voice=v
-
-utter.onend=()=>{
+if(i>=s.length)return
+document.querySelectorAll(".sentence").forEach(e=>e.classList.remove("active"))
+s[i].classList.add("active")
+speak(s[i].innerText)
 i++
+setTimeout(next,2500)
+}
 next()
 }
 
-synth.speak(utter)
+function stopSpeak(){
+synth.cancel()
+document.querySelectorAll(".sentence").forEach(e=>e.classList.remove("active"))
 }
 
-next()
+/* ===== CLEAR ===== */
+function clearText(){
+document.getElementById("inputText").value=""
 }
 
-document.getElementById("imgInput").addEventListener("change", handleImage)
-
-async function handleImage(e){
-const file=e.target.files[0]
-if(!file)return
-
-showOCR(true)
-
-const { data:{ text } } = await Tesseract.recognize(file,"eng")
-
-showOCR(false)
-
-if(!text.trim())return
-document.getElementById("inputText").value=text.trim()
-}
-
-function showOCR(v){
-document.getElementById("ocrLoad").style.display=v?"flex":"none"
-}
-
+/* ===== CLICK PHRASE ===== */
 document.addEventListener("click",e=>{
 if(e.target.classList.contains("phrase")){
 const p=e.target.dataset.p
@@ -485,8 +311,6 @@ alert(p+" = "+PHRASES[p])
 }
 })
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
 </body>
 </html>
