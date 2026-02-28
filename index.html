@@ -330,8 +330,9 @@ const wrap=document.createElement("div")
 wrap.className="sentence"
 wrap.innerHTML = highlightPhrases(s.trim())
 wrap.onclick = (e)=>{
-  if(e.target.classList.contains("phrase")){
-    const p = e.target.dataset.p
+  const ph = e.target.closest(".phrase")
+  if(ph){
+    const p = ph.dataset.p
     alert(PHRASES[p].base)
     return
   }
