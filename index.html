@@ -51,6 +51,14 @@ position:fixed;inset:0;background:rgba(0,0,0,.35);
 display:none;align-items:center;justify-content:center;
 color:#fff;font-size:18px;z-index:50
 }
+
+.voiceDrop{
+  border:none;
+  border-radius:12px;
+  padding:8px 10px;
+  background:#eee;
+  font-size:14px;
+}
 </style>
 </head>
 
@@ -82,7 +90,7 @@ color:#fff;font-size:18px;z-index:50
 <div style="display:flex;gap:10px;margin-bottom:10px">
 <button class="btn btnRead" onclick="playAll()">🔊 Play All</button>
 <button class="btn btnClear" onclick="stopSpeak()">⏹ Stop</button>
-<select id="voiceSelect" style="flex:1;border-radius:10px"></select>
+<select id="voiceSelect"></select>
 </div>
 
 <div class="closeX" onclick="closeReader()">✕</div>
@@ -145,15 +153,28 @@ const PHRASES = {
 
 /* ===== VOICES ===== */
 function loadVoices(){
-voices=synth.getVoices()
-const sel=document.getElementById("voiceSelect")
-sel.innerHTML='<option value="">Default Voice</option>'
-voices.forEach((v,i)=>{
-const o=document.createElement("option")
-o.value=i
-o.textContent=v.name+" ("+v.lang+")"
-sel.appendChild(o)
-})
+  const select = document.getElementById("voiceSelect");
+  if(!select) return;
+
+  const voices = speechSynthesis.getVoices();
+
+  if(!voices.length){
+    select.innerHTML = '<option>No voices</option>';
+    return;
+  }
+
+  select.innerHTML = "";
+
+  voices.forEach((v,i)=>{
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = `${v.name} (${v.lang})`;
+    select.appendChild(opt);
+  });
+
+  // pilih default English kalau ada
+  const enIndex = voices.findIndex(v=>v.lang.startsWith("en"));
+  if(enIndex>=0) select.value = enIndex;
 }
 speechSynthesis.onvoiceschanged=loadVoices
 
@@ -283,6 +304,14 @@ if(text.trim())document.getElementById("inputText").value=text.trim()
 })
 
 function clearText(){document.getElementById("inputText").value=""}
+    
+// ===== iOS / Safari voice fix =====
+speechSynthesis.onvoiceschanged = loadVoices;
+
+// paksa load di iOS
+setTimeout(loadVoices, 200);
+
+
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
