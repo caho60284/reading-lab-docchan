@@ -34,17 +34,7 @@ resize:vertical;
 background:#fff
 }
 
-.readBtn{
-margin-top:12px;
-width:100%;
-border:none;
-border-radius:14px;
-padding:14px;
-font-size:17px;
-background:#26a69a;
-color:#fff
-}
-
+/* ===== BUTTONS ===== */
 .btnRow{
 display:flex;
 gap:12px;
@@ -53,22 +43,28 @@ margin-top:12px;
 
 .btn{
 flex:1;
+height:54px;
 border:none;
 border-radius:14px;
-padding:14px;
 font-size:17px;
-}
-
-.readBtn{
-background:#26a69a;
 color:#fff;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+transition:transform .08s, box-shadow .08s;
 }
 
-.clearBtn{
-background:linear-gradient(135deg,#7b61ff,#5a8dee);
-color:#fff;
+.btn:active{
+transform:scale(.97);
+box-shadow:0 2px 6px rgba(0,0,0,.15) inset;
 }
 
+.btnRead{background:#26a69a}
+.btnClear{background:linear-gradient(135deg,#7b61ff,#5a8dee)}
+.btnImport{background:#2f86d6}
+
+/* ===== MODAL ===== */
 .modal{
 position:fixed;
 inset:0;
@@ -100,17 +96,18 @@ color:#999;
 cursor:pointer
 }
 
+/* ===== SENTENCE ===== */
 .sentence{
 margin-bottom:12px;
 line-height:1.6;
 cursor:pointer;
-padding:4px 2px;
-border-radius:6px
+padding:6px 6px;
+border-radius:8px;
+transition:background .15s;
 }
 
-.sentence.active{
-background:#e0f2f1
-}
+.sentence.active{background:#e0f2f1}
+.sentence.playing{background:#c8ede9}
 
 .translation{
 color:#26a69a;
@@ -120,35 +117,31 @@ display:none;
 line-height:1.55
 }
 
-/* ===== BUTTON ROW ===== */
-.btnRow{
-display:flex;
-gap:12px;
-margin-top:12px;
-}
-
-.btn{
-flex:1;
-height:54px;            /* tinggi sama */
-border:none;
-border-radius:14px;
-font-size:17px;
-}
-
-.btnRead{
-background:#26a69a;
+/* ===== OCR LOADING ===== */
+#ocrLoad{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.35);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:50;
 color:#fff;
+font-size:18px;
+flex-direction:column;
+gap:10px
 }
 
-.btnClear{
-background:linear-gradient(135deg,#7b61ff,#5a8dee);
-color:#fff;
+.spinner{
+width:36px;
+height:36px;
+border:4px solid rgba(255,255,255,.3);
+border-top:4px solid #fff;
+border-radius:50%;
+animation:spin 1s linear infinite
 }
 
-.btnImport{
-  background:#2f86d6;
-  color:#fff;
-}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 </style>
 </head>
@@ -164,25 +157,29 @@ color:#fff;
 <textarea id="inputText" placeholder="Paste English text..."></textarea>
 
 <div class="btnRow">
-  <button class="btn btnClear" onclick="clearText()">🧹 Clear</button>
-  <button class="btn btnRead" onclick="openReader()">📖 Read</button>
-  <button class="btn btnImport" onclick="document.getElementById('imgInput').click()">📥 Import</button>
+<button class="btn btnClear" onclick="clearText()">🧹 Clear</button>
+<button class="btn btnRead" onclick="openReader()">📖 Read</button>
+<button class="btn btnImport" onclick="document.getElementById('imgInput').click()">📥 Import</button>
 </div>
 
 <input type="file" id="imgInput" accept="image/*" style="display:none">
+</div>
 
+<!-- OCR LOADING -->
+<div id="ocrLoad">
+<div class="spinner"></div>
+<div>Scanning text...</div>
 </div>
 
 <div class="modal" id="readerModal">
 <div class="box">
 
 <div style="display:flex;gap:10px;margin-bottom:10px">
-  <button class="btn btnRead" onclick="playAll()">🔊 Play All</button>
-  <button class="btn btnClear" onclick="stopSpeak()">⏹ Stop</button>
+<button class="btn btnRead" onclick="playAll()">🔊 Play All</button>
+<button class="btn btnClear" onclick="stopSpeak()">⏹ Stop</button>
 </div>
 
 <div class="closeX" onclick="closeReader()">✕</div>
-
 <div id="reader"></div>
 
 </div>
@@ -190,19 +187,21 @@ color:#fff;
 
 <script>
 let sentences=[]
+let synth = window.speechSynthesis
+let speakingAll = false
+let currentIndex = -1
 
 function openReader(){
 const text=document.getElementById("inputText").value.trim()
 if(!text)return
-
 splitSentences(text)
 renderSentences()
-
 document.getElementById("readerModal").style.display="flex"
 }
 
 function closeReader(){
 document.getElementById("readerModal").style.display="none"
+stopSpeak()
 }
 
 function splitSentences(text){
@@ -220,8 +219,8 @@ const wrap=document.createElement("div")
 wrap.className="sentence"
 wrap.innerText=s.trim()
 wrap.onclick=()=>{
-  selectSentence(i)
-  speak(sentences[i])
+selectSentence(i)
+speakSentence(i)
 }
 
 const trans=document.createElement("div")
@@ -254,71 +253,88 @@ trans.innerText=hasil
 }
 
 function clearText(){
-  const el = document.getElementById("inputText");
-  el.value = "";
-  el.focus();
+const el=document.getElementById("inputText")
+el.value=""
+el.focus()
 }
 
-let synth = window.speechSynthesis
-let speakingAll = false
+function speakSentence(i){
+synth.cancel()
+currentIndex=i
+highlightPlaying(i)
 
-function speak(text){
-  if(!text) return
-  synth.cancel()
+const utter=new SpeechSynthesisUtterance(sentences[i])
+utter.lang="en-US"
+utter.rate=0.9
 
-  const utter = new SpeechSynthesisUtterance(text)
-  utter.lang = "en-US"
-  utter.rate = 0.9
-  synth.speak(utter)
+utter.onend=()=>{
+removePlaying()
+}
+
+synth.speak(utter)
+}
+
+function highlightPlaying(i){
+removePlaying()
+document.querySelectorAll(".sentence")[i].classList.add("playing")
+}
+
+function removePlaying(){
+document.querySelectorAll(".sentence").forEach(s=>s.classList.remove("playing"))
 }
 
 function stopSpeak(){
-  speakingAll = false
-  synth.cancel()
+speakingAll=false
+synth.cancel()
+removePlaying()
 }
 
 function playAll(){
-  if(!sentences.length) return
-  speakingAll = true
-  synth.cancel()
+if(!sentences.length)return
+speakingAll=true
+synth.cancel()
+let i=0
 
-  let i = 0
+function next(){
+if(!speakingAll||i>=sentences.length){removePlaying();return}
 
-  function next(){
-    if(!speakingAll || i >= sentences.length) return
+highlightPlaying(i)
 
-    const utter = new SpeechSynthesisUtterance(sentences[i])
-    utter.lang = "en-US"
-    utter.rate = 0.9
+const utter=new SpeechSynthesisUtterance(sentences[i])
+utter.lang="en-US"
+utter.rate=0.9
 
-    utter.onend = ()=>{
-      i++
-      next()
-    }
-
-    synth.speak(utter)
-  }
-
-  next()
+utter.onend=()=>{
+i++
+next()
 }
 
+synth.speak(utter)
+}
+
+next()
+}
+
+/* OCR */
 document.getElementById("imgInput").addEventListener("change", handleImage)
 
 async function handleImage(e){
-  const file = e.target.files[0]
-  if(!file) return
+const file=e.target.files[0]
+if(!file)return
 
-  const { data:{ text } } = await Tesseract.recognize(
-    file,
-    "eng"
-  )
+showOCR(true)
 
-  if(!text.trim()) return
+const { data:{ text } } = await Tesseract.recognize(file,"eng")
 
-  document.getElementById("inputText").value = text.trim()
+showOCR(false)
+
+if(!text.trim())return
+document.getElementById("inputText").value=text.trim()
 }
 
-
+function showOCR(v){
+document.getElementById("ocrLoad").style.display=v?"flex":"none"
+}
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
