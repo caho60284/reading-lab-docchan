@@ -383,6 +383,28 @@ trans.innerText=hasil
 })
 }
 
+function translatePhrase(base){
+  const dict = {
+    "take care":"merawat / menjaga",
+    "deal with":"menghadapi",
+    "turn out":"ternyata",
+    "give up":"menyerah",
+    "carry on":"terus melanjutkan",
+    "find out":"mengetahui",
+    "work out":"berhasil / terpecahkan",
+    "look after":"merawat",
+    "come up with":"memikirkan / menemukan ide",
+    "make up":"mengarang / membuat"
+  }
+  return dict[base] || ""
+}
+
+function showPhrase(p){
+  const phrase = PHRASES[p]
+  if(!phrase) return
+  alert(phrase.base + " = " + translatePhrase(phrase.base))
+}
+
 function clearText(){
 const el=document.getElementById("inputText")
 el.value=""
