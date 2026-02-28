@@ -119,6 +119,31 @@ margin-bottom:10px;
 display:none;
 line-height:1.55
 }
+
+/* ===== BUTTON ROW ===== */
+.btnRow{
+display:flex;
+gap:12px;
+margin-top:12px;
+}
+
+.btn{
+flex:1;
+height:54px;            /* tinggi sama */
+border:none;
+border-radius:14px;
+font-size:17px;
+}
+
+.btnRead{
+background:#26a69a;
+color:#fff;
+}
+
+.btnClear{
+background:#e0e0e0;
+color:#2b6cb0;
+}
 </style>
 </head>
 
@@ -133,8 +158,8 @@ line-height:1.55
 <textarea id="inputText" placeholder="Paste English text..."></textarea>
 
 <div class="btnRow">
-  <button class="btn clearBtn" onclick="clearText()">✕ Clear</button>
-  <button class="btn readBtn" onclick="openReader()">Read</button>
+  <button class="btn btnClear" onclick="clearText()">✕ Clear</button>
+  <button class="btn btnRead" onclick="openReader()">Read</button>
 </div>
 
 </div>
@@ -212,8 +237,9 @@ trans.innerText=hasil
 }
 
 function clearText(){
-  document.getElementById("inputText").value=""
-  document.getElementById("inputText").focus()
+  const el = document.getElementById("inputText");
+  el.value = "";
+  el.focus();
 }
 
 </script>
