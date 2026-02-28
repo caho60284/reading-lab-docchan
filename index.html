@@ -159,47 +159,56 @@ background:#fff;
 }
 
 .readerToolbar{
-display:flex;
-gap:12px;
-margin-bottom:14px;
+  display:flex;
+  gap:12px;
+  margin-bottom:14px;
 }
 
 .toolBtn{
-flex:1;
-height:56px;
-border-radius:16px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:17px;
-font-weight:600;
-color:#fff;
-border:none;
+  flex:1;
+  border:none;
+  border-radius:16px;
+  padding:14px 12px;
+  font-size:18px;
+  font-weight:600;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
 }
 
 .playBtn{
-background:linear-gradient(135deg,#2ea79b,#1f8f84);
+  background:linear-gradient(135deg,#4caf93,#66bb6a);
 }
 
 .stopBtn{
-background:linear-gradient(135deg,#7b7be8,#5a5ad6);
+  background:linear-gradient(135deg,#7b7be8,#5c6bc0);
 }
 
 .voiceBtn{
-background:linear-gradient(135deg,#ff4b4b,#d32f2f);
-gap:8px;
-padding:0 12px;
+  position:relative;
+  flex:1.6; /* Voice lebih panjang seperti versi bagus */
+  background:linear-gradient(135deg,#ff5a5a,#d84343);
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  color:#fff;
+  font-weight:600;
 }
 
+/* select full-area clickable */
 .voiceBtn select{
-flex:1;
-border:none;
-background:transparent;
-color:#fff;
-font-size:16px;
-outline:none;
-appearance:none;
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  opacity:0;
+  cursor:pointer;
 }
+
 </style>
 </head>
 
