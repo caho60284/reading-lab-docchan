@@ -328,7 +328,7 @@ box.innerHTML=""
 sentences.forEach((s,i)=>{
 const wrap=document.createElement("div")
 wrap.className="sentence"
-wrap.innerText=s.trim()
+wrap.innerHTML = highlightPhrases(s.trim())
 wrap.onclick=()=>{
 selectSentence(i)
 speakSentence(i)
