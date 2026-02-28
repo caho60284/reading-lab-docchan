@@ -208,6 +208,14 @@ background:linear-gradient(135deg,#7b7be8,#5a5ad6);
   opacity:0;
   cursor:pointer;
 }
+
+.phrase{
+text-decoration:underline;
+text-decoration-color:#ff6b6b;
+text-decoration-thickness:2px;
+cursor:pointer;
+}
+
 </style>
 </head>
 
@@ -263,6 +271,21 @@ let speakingAll = false
 let currentIndex = -1
 let voices=[]
 
+/* ===== PHRASES TEST ===== */
+const PHRASES = {
+"come up with":"mengemukakan",
+"take into account":"mempertimbangkan",
+"deal with":"menangani",
+"figure out":"memahami",
+"look forward to":"menantikan",
+"run out of":"kehabisan",
+"get along with":"rukun dengan",
+"make up for":"menebus",
+"turn out":"ternyata",
+"carry on":"melanjutkan"
+}
+
+
 function loadVoices(){
 voices = synth.getVoices()
 const sel=document.getElementById("voiceSelect")
@@ -311,6 +334,21 @@ sentences = text
 .match(/[^\.!\?]+[\.!\?]+/g) || [text]
 }
 
+function highlightPhrases(text){
+let result = text
+
+Object.keys(PHRASES).forEach(p=>{
+const re = new RegExp("\\b"+p+"\\b","gi")
+result = result.replace(re,
+`<span class="phrase" data-p="${p}">${p}</span>`
+)
+})
+
+return result
+}
+
+
+
 function renderSentences(){
 const box=document.getElementById("reader")
 box.innerHTML=""
@@ -318,7 +356,7 @@ box.innerHTML=""
 sentences.forEach((s,i)=>{
 const wrap=document.createElement("div")
 wrap.className="sentence"
-wrap.innerText=s.trim()
+wrap.innerHTML = highlightPhrases(s.trim())
 wrap.onclick=()=>{
 selectSentence(i)
 speakSentence(i)
@@ -439,6 +477,13 @@ document.getElementById("inputText").value=text.trim()
 function showOCR(v){
 document.getElementById("ocrLoad").style.display=v?"flex":"none"
 }
+
+document.addEventListener("click",e=>{
+if(e.target.classList.contains("phrase")){
+const p=e.target.dataset.p
+alert(p+" = "+PHRASES[p])
+}
+})
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
