@@ -160,7 +160,10 @@ color:#fff;
 <div class="btnRow">
   <button class="btn btnClear" onclick="clearText()">✕ Clear</button>
   <button class="btn btnRead" onclick="openReader()">Read</button>
+  <button class="btn btnRead" onclick="document.getElementById('imgInput').click()">📷 Import</button>
 </div>
+
+<input type="file" id="imgInput" accept="image/*" style="display:none">
 
 </div>
 
@@ -293,8 +296,26 @@ function playAll(){
   next()
 }
 
+document.getElementById("imgInput").addEventListener("change", handleImage)
+
+async function handleImage(e){
+  const file = e.target.files[0]
+  if(!file) return
+
+  const { data:{ text } } = await Tesseract.recognize(
+    file,
+    "eng"
+  )
+
+  if(!text.trim()) return
+
+  document.getElementById("inputText").value = text.trim()
+}
+
 
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
 </body>
 </html>
