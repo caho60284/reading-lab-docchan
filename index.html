@@ -107,7 +107,20 @@ line-height:1.55
 
 <div class="main">
 <textarea id="inputText" placeholder="Paste English text..."></textarea>
-<button class="readBtn" onclick="openReader()">Read</button>
+
+<div style="display:flex;gap:8px;margin-top:10px">
+  <button onclick="clearText()" style="
+    flex:1;
+    border:none;
+    border-radius:14px;
+    padding:14px;
+    font-size:17px;
+    background:#e0e0e0;
+  ">✕ Clear</button>
+
+  <button class="readBtn" onclick="openReader()" style="flex:2">Read</button>
+</div>
+
 </div>
 
 <div class="modal" id="readerModal">
@@ -181,6 +194,12 @@ data[0].forEach(b=>hasil+=b[0])
 trans.innerText=hasil
 })
 }
+
+function clearText(){
+  document.getElementById("inputText").value=""
+  document.getElementById("inputText").focus()
+}
+
 </script>
 
 </body>
