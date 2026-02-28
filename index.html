@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ah<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -260,19 +260,6 @@ let speakingAll = false
 let currentIndex = -1
 let voices=[]
 
-const PHRASES = [
-{base:"take care", forms:["take","takes","took","taking","taken"], tail:"care"},
-{base:"deal with", forms:["deal","deals","dealt","dealing"], tail:"with"},
-{base:"turn out", forms:["turn","turns","turned","turning"], tail:"out"},
-{base:"give up", forms:["give","gives","gave","giving","given"], tail:"up"},
-{base:"carry on", forms:["carry","carries","carried","carrying"], tail:"on"},
-{base:"find out", forms:["find","finds","found","finding"], tail:"out"},
-{base:"work out", forms:["work","works","worked","working"], tail:"out"},
-{base:"look after", forms:["look","looks","looked","looking"], tail:"after"},
-{base:"come up with", forms:["come","comes","came","coming"], tail:"up with"},
-{base:"make up", forms:["make","makes","made","making"], tail:"up"}
-]
-
 function loadVoices(){
 voices = synth.getVoices()
 const sel=document.getElementById("voiceSelect")
@@ -339,15 +326,7 @@ box.innerHTML=""
 sentences.forEach((s,i)=>{
 const wrap=document.createElement("div")
 wrap.className="sentence"
-wrap.innerHTML = highlightPhrases(s.trim())
-
-wrap.querySelectorAll(".phrase").forEach(el=>{
-  el.onclick = (e)=>{
-    e.stopPropagation()
-    const p = el.dataset.p
-    showPhrase(p)
-  }
-})
+wrap.innerHTML = s.trim()
 
 wrap.addEventListener("click", ()=>{
   selectSentence(i)
@@ -468,21 +447,6 @@ document.getElementById("inputText").value=text.trim()
 
 function showOCR(v){
 document.getElementById("ocrLoad").style.display=v?"flex":"none"
-}
-
-function highlightPhrases(text){
-  let out = text
-
-  PHRASES.forEach((p,i)=>{
-    const verbs = p.forms.join("|")
-    const regex = new RegExp(`\\b(${verbs})\\s+${p.tail}\\b`,"gi")
-
-    out = out.replace(regex,
-      `<span class="phrase" data-p="${i}" style="text-decoration:underline;color:#e53935;font-weight:600">$&</span>`
-    )
-  })
-
-  return out
 }
 
 </script>
