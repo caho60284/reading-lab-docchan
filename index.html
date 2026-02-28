@@ -329,9 +329,14 @@ sentences.forEach((s,i)=>{
 const wrap=document.createElement("div")
 wrap.className="sentence"
 wrap.innerHTML = highlightPhrases(s.trim())
-wrap.onclick=()=>{
-selectSentence(i)
-speakSentence(i)
+wrap.onclick = (e)=>{
+  if(e.target.classList.contains("phrase")){
+    const p = e.target.dataset.p
+    alert(PHRASES[p].base)
+    return
+  }
+  selectSentence(i)
+  speakSentence(i)
 }
 
 const trans=document.createElement("div")
