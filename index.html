@@ -340,6 +340,15 @@ sentences.forEach((s,i)=>{
 const wrap=document.createElement("div")
 wrap.className="sentence"
 wrap.innerHTML = highlightPhrases(s.trim())
+
+wrap.querySelectorAll(".phrase").forEach(el=>{
+  el.onclick = (e)=>{
+    e.stopPropagation()
+    const p = el.dataset.p
+    showPhrase(p)
+  }
+})
+
 wrap.addEventListener("click", ()=>{
   selectSentence(i)
   speakSentence(i)
