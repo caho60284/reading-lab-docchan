@@ -363,6 +363,16 @@ const PHRASES = [
 "at once"
 ]
 
+const PHRASE_MEANING = {
+"take care":"merawat / menjaga",
+"deal with":"menghadapi",
+"run into":"bertemu tidak sengaja",
+"set up":"menyiapkan",
+"break down":"rusak",
+"at the same time":"pada saat yang sama",
+"in the end":"pada akhirnya"
+}
+
 function loadVoices(){
 voices = synth.getVoices()
 const sel=document.getElementById("voiceSelect")
@@ -489,10 +499,11 @@ function translatePhrase(base){
   return dict[base] || ""
 }
 
-function showPhrase(p){
-  const phrase = PHRASES[p]
+function showPhrase(i){
+  const phrase = PHRASES[i]
   if(!phrase) return
-  alert(phrase)
+  const arti = PHRASE_MEANING[phrase] || ""
+  alert(phrase + (arti ? " = " + arti : ""))
 }
 
 function clearText(){
