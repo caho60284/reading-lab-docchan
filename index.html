@@ -2,62 +2,106 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Reading Lab</title>
 
 <style>
-*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
-body{margin:0;background:#f3f5f9;color:#222}
+body{
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  margin:0;
+  background:#f4f6f8;
+}
 
-header{position:sticky;top:0;background:#fff;padding:16px 14px 10px;box-shadow:0 2px 6px rgba(0,0,0,.08);z-index:10}
-h1{margin:0;font-size:22px}
-.lab{font-size:12px;color:#888;margin-top:2px}
+header{
+  padding:14px 18px;
+  background:white;
+  box-shadow:0 2px 6px rgba(0,0,0,.08);
+}
 
-.main{padding:14px}
+header h1{
+  margin:0;
+  font-size:22px;
+}
+
+header small{
+  color:#777;
+}
+
+.main{
+  padding:16px;
+}
 
 textarea{
-width:100%;min-height:200px;border-radius:14px;border:1px solid #ddd;
-padding:14px;font-size:16px;line-height:1.5;resize:vertical;background:#fff
+  width:100%;
+  height:220px;
+  border-radius:14px;
+  border:1px solid #ddd;
+  padding:14px;
+  font-size:16px;
+  resize:none;
 }
 
-.btnRow{display:flex;gap:12px;margin-top:12px}
+.btnRow{
+  display:flex;
+  gap:12px;
+  margin-top:12px;
+}
+
 .btn{
-flex:1;height:54px;border:none;border-radius:14px;font-size:17px;color:#fff;
-display:flex;align-items:center;justify-content:center;gap:8px;transition:.08s
-}
-.btn:active{transform:scale(.97)}
-
-.btnRead{background:#26a69a}
-.btnClear{background:linear-gradient(135deg,#7b61ff,#5a8dee)}
-.btnImport{background:#2f86d6}
-
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;padding:18px}
-.box{background:#fff;width:100%;max-width:560px;border-radius:18px;padding:20px 18px 18px;position:relative;max-height:85vh;overflow:auto}
-.closeX{position:absolute;top:10px;right:12px;color:#999;cursor:pointer}
-
-.sentence{margin-bottom:12px;line-height:1.6;cursor:pointer;padding:6px;border-radius:8px}
-.sentence.active{background:#e0f2f1}
-.translation{color:#26a69a;margin-top:6px;display:none}
-
-.phrase{ text-decoration:underline; text-decoration-color:#ff9800; cursor:pointer }
-
-#phrasePopup{
-position:fixed;background:#fff;border-radius:10px;padding:8px 10px;
-box-shadow:0 4px 14px rgba(0,0,0,.2);font-size:14px;display:none;z-index:999
-}
-
-#ocrLoad{
-position:fixed;inset:0;background:rgba(0,0,0,.35);
-display:none;align-items:center;justify-content:center;
-color:#fff;font-size:18px;z-index:50
-}
-
-.voiceDrop{
+  flex:1;
   border:none;
-  border-radius:12px;
-  padding:8px 10px;
-  background:#eee;
-  font-size:14px;
+  border-radius:14px;
+  padding:14px;
+  font-size:16px;
+  color:white;
+  cursor:pointer;
+}
+
+.btnClear{
+  background:linear-gradient(135deg,#7b5cff,#5c6cff);
+}
+
+.btnRead{
+  background:linear-gradient(135deg,#3aa89c,#2e8b80);
+}
+
+.btnImport{
+  background:linear-gradient(135deg,#4a90e2,#3b78c5);
+}
+
+.btnStop{
+  background:linear-gradient(135deg,#ff5f5f,#e53935);
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.35);
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+
+.box{
+  width:90%;
+  max-width:520px;
+  background:white;
+  border-radius:16px;
+  padding:16px;
+}
+
+.readerText{
+  max-height:60vh;
+  overflow:auto;
+  margin-top:10px;
+  line-height:1.6;
+}
+
+#voiceSelect{
+  flex:1;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #ddd;
 }
 </style>
 </head>
@@ -65,258 +109,140 @@ color:#fff;font-size:18px;z-index:50
 <body>
 
 <header>
-<h1>📘 Reading Lab</h1>
-<div class="lab">LAB VERSION</div>
+  <h1>📘 Reading Lab</h1>
+  <small>LAB VERSION</small>
 </header>
 
 <div class="main">
+
 <textarea id="inputText" placeholder="Paste English text..."></textarea>
 
 <div class="btnRow">
-<button class="btn btnClear" onclick="clearText()">🧹 Clear</button>
-<button class="btn btnRead" onclick="openReader()">📖 Read</button>
-<button class="btn btnImport" onclick="document.getElementById('imgInput').click()">📥 Import</button>
+  <button class="btn btnClear" onclick="clearText()">🧹 Clear</button>
+  <button class="btn btnRead" onclick="openReader()">📖 Read</button>
+  <button class="btn btnImport" onclick="document.getElementById('imgInput').click()">📥 Import</button>
 </div>
 
 <input type="file" id="imgInput" accept="image/*" style="display:none">
+
 </div>
 
-<div id="ocrLoad">Scanning text...</div>
-<div id="phrasePopup"></div>
+<div id="ocrLoad" style="display:none;padding:10px;text-align:center;">
+Scanning text...
+</div>
 
 <div class="modal" id="readerModal">
 <div class="box">
 
 <div style="display:flex;gap:10px;margin-bottom:10px">
-<button class="btn btnRead" onclick="playAll()">🔊 Play All</button>
-<button class="btn btnClear" onclick="stopSpeak()">⏹ Stop</button>
-<select id="voiceSelect"></select>
+  <button class="btn btnRead" onclick="playAll()">🔊 Play All</button>
+  <button class="btn btnStop" onclick="stopSpeak()">⏹ Stop</button>
+  <select id="voiceSelect"></select>
 </div>
 
-<div class="closeX" onclick="closeReader()">✕</div>
-<div id="reader"></div>
+<div id="readerText" class="readerText"></div>
 
 </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
 
 <script>
-let sentences=[]
-let synth=window.speechSynthesis
-let voices=[]
-let speakingAll=false
-
-/* ===== PHRASE DATABASE (≈800) ===== */
-const PHRASES = {
-"show up":"datang",
-"carry on":"lanjutkan",
-"look into":"menyelidiki",
-"figure out":"memahami",
-"pick up":"mengambil",
-"come back":"kembali",
-"head out":"pergi",
-"chill out":"tenang",
-"hang in there":"bertahan",
-"give up":"menyerah",
-"find out":"menemukan",
-"turn down":"menolak",
-"run into":"bertemu tak sengaja",
-"make a decision":"membuat keputusan",
-"take responsibility":"bertanggung jawab",
-"pay attention":"memperhatikan",
-"catch a cold":"masuk angin",
-"break the news":"menyampaikan kabar",
-"over the moon":"sangat bahagia",
-"under the weather":"kurang sehat",
-"hit the sack":"tidur",
-"piece of cake":"sangat mudah",
-"in the long run":"dalam jangka panjang",
-"at the end of the day":"pada akhirnya",
-"out of the blue":"tiba-tiba",
-"on the same page":"sepemahaman",
-"get along":"akur",
-"set up":"menyiapkan",
-"take off":"lepas landas",
-"work out":"berhasil",
-"bring up":"membahas",
-"put off":"menunda",
-"come across":"menemukan tak sengaja",
-"break down":"rusak",
-"look after":"merawat",
-"take care of":"mengurus",
-"deal with":"menangani",
-"come up with":"mengusulkan",
-"get over":"pulih",
-"turn out":"ternyata",
-"make sure":"memastikan",
-"take place":"terjadi"
+/* ===== TEXT ===== */
+function clearText(){
+  document.getElementById("inputText").value=""
 }
 
-/* ===== VOICES ===== */
-function loadVoices(){
-  const sel = document.getElementById("voiceSelect")
-  const voices = speechSynthesis.getVoices()
+function openReader(){
+  const text=document.getElementById("inputText").value.trim()
+  if(!text) return
+  document.getElementById("readerText").innerText=text
+  document.getElementById("readerModal").style.display="flex"
+}
 
+/* ===== SPEECH ENGINE ===== */
+let synth=window.speechSynthesis
+let voices=[]
+
+function loadVoices(){
+  const sel=document.getElementById("voiceSelect")
+  if(!sel) return
+
+  voices=synth.getVoices()
+
+  // iOS belum load
   if(!voices.length){
-    setTimeout(loadVoices, 200) // tunggu iOS load voices
+    setTimeout(loadVoices,200)
     return
   }
 
-  sel.innerHTML = '<option value="">Default Voice</option>'
+  sel.innerHTML='<option value="">Default Voice</option>'
 
-  voices.forEach((v,i)=>{
-    const o = document.createElement("option")
-    o.value = i
-    o.textContent = v.name + " (" + v.lang + ")"
-    sel.appendChild(o)
+  // prioritaskan English
+  const sorted=[
+    ...voices.filter(v=>v.lang.startsWith("en")),
+    ...voices.filter(v=>!v.lang.startsWith("en"))
+  ]
+
+  sorted.forEach((v,i)=>{
+    const opt=document.createElement("option")
+    opt.value=i
+    opt.textContent=v.name+" ("+v.lang+")"
+    sel.appendChild(opt)
   })
+
+  // auto pilih female english jika ada
+  const femaleIndex=sorted.findIndex(v=>/female|woman|siri/i.test(v.name) && v.lang.startsWith("en"))
+  sel.value=femaleIndex>=0?femaleIndex:0
 }
 
-window.speechSynthesis.onvoiceschanged = loadVoices
-loadVoices()
-  });
-
-  // pilih default English kalau ada
-  const enIndex = voices.findIndex(v=>v.lang.startsWith("en"));
-  if(enIndex>=0) select.value = enIndex;
-}
 speechSynthesis.onvoiceschanged=loadVoices
+setTimeout(loadVoices,300)
 
-/* ===== READER ===== */
-function openReader(){
-const text=document.getElementById("inputText").value.trim()
-if(!text)return
-splitSentences(text)
-renderSentences()
-document.getElementById("readerModal").style.display="flex"
-}
+/* ===== PLAY ===== */
+function playAll(){
+  stopSpeak()
 
-function closeReader(){
-document.getElementById("readerModal").style.display="none"
-stopSpeak()
-}
+  const text=document.getElementById("readerText").innerText
+  if(!text) return
 
-function splitSentences(text){
-sentences=text.replace(/\n/g," ").match(/[^\.!\?]+[\.!\?]+/g)||[text]
-}
+  const sel=document.getElementById("voiceSelect")
+  const utter=new SpeechSynthesisUtterance(text)
 
-/* ===== PHRASE DETECT ===== */
-function highlightPhrases(s){
-let html=s
-Object.keys(PHRASES).forEach(p=>{
-const re=new RegExp("\\b"+p+"\\b","gi")
-html=html.replace(re,`<span class="phrase" data-p="${p}">${p}</span>`)
-})
-return html
-}
+  const sorted=[
+    ...voices.filter(v=>v.lang.startsWith("en")),
+    ...voices.filter(v=>!v.lang.startsWith("en"))
+  ]
 
-function renderSentences(){
-const box=document.getElementById("reader")
-box.innerHTML=""
+  if(sel.value!==""){
+    utter.voice=sorted[sel.value]
+  }
 
-sentences.forEach((s,i)=>{
-const wrap=document.createElement("div")
-wrap.className="sentence"
-wrap.innerHTML=highlightPhrases(s.trim())
-wrap.onclick=()=>selectSentence(i)
-
-wrap.querySelectorAll(".phrase").forEach(el=>{
-el.onclick=(e)=>{
-e.stopPropagation()
-showPhrase(e,el.dataset.p)
-}
-})
-
-const tr=document.createElement("div")
-tr.className="translation"
-tr.id="tr"+i
-
-wrap.appendChild(tr)
-box.appendChild(wrap)
-})
-}
-
-/* ===== POPUP ===== */
-function showPhrase(e,p){
-const pop=document.getElementById("phrasePopup")
-pop.innerHTML="<b>"+p+"</b><br>"+PHRASES[p]
-pop.style.left=e.pageX+10+"px"
-pop.style.top=e.pageY+10+"px"
-pop.style.display="block"
-setTimeout(()=>pop.style.display="none",2000)
-}
-
-/* ===== TRANSLATE ===== */
-function selectSentence(i){
-document.querySelectorAll(".sentence").forEach(s=>s.classList.remove("active"))
-document.querySelectorAll(".translation").forEach(t=>t.style.display="none")
-
-const sent=document.querySelectorAll(".sentence")[i]
-const trans=document.getElementById("tr"+i)
-
-sent.classList.add("active")
-trans.style.display="block"
-trans.innerText="Translating..."
-
-fetch("https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=id&dt=t&q="+encodeURIComponent(sentences[i]))
-.then(r=>r.json())
-.then(data=>{
-let hasil=""
-data[0].forEach(b=>hasil+=b[0])
-trans.innerText=hasil
-})
-}
-
-/* ===== TTS ===== */
-function speakSentence(i){
-synth.cancel()
-const utter=new SpeechSynthesisUtterance(sentences[i])
-const vIndex=document.getElementById("voiceSelect").value
-if(vIndex!==""&&voices[vIndex]) utter.voice=voices[vIndex]
-synth.speak(utter)
+  utter.rate=0.95
+  utter.pitch=1
+  synth.speak(utter)
 }
 
 function stopSpeak(){
-speakingAll=false
-synth.cancel()
-}
-
-function playAll(){
-if(!sentences.length)return
-speakingAll=true
-let i=0
-
-function next(){
-if(!speakingAll||i>=sentences.length)return
-const utter=new SpeechSynthesisUtterance(sentences[i])
-const vIndex=document.getElementById("voiceSelect").value
-if(vIndex!==""&&voices[vIndex]) utter.voice=voices[vIndex]
-utter.onend=()=>{i++;next()}
-synth.speak(utter)
-}
-next()
+  synth.cancel()
 }
 
 /* ===== OCR ===== */
 document.getElementById("imgInput").addEventListener("change",async e=>{
-const f=e.target.files[0]
-if(!f)return
-document.getElementById("ocrLoad").style.display="flex"
-const {data:{text}}=await Tesseract.recognize(f,"eng")
-document.getElementById("ocrLoad").style.display="none"
-if(text.trim())document.getElementById("inputText").value=text.trim()
+  const file=e.target.files[0]
+  if(!file) return
+
+  document.getElementById("ocrLoad").style.display="block"
+
+  const {data:{text}}=await Tesseract.recognize(file,"eng")
+
+  document.getElementById("ocrLoad").style.display="none"
+
+  if(text.trim()){
+    document.getElementById("inputText").value=text.trim()
+  }
 })
-
-function clearText(){document.getElementById("inputText").value=""}
-    
-// ===== iOS / Safari voice fix =====
-speechSynthesis.onvoiceschanged = loadVoices;
-
-// paksa load di iOS
-setTimeout(loadVoices, 200);
-
-
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </body>
 </html>
