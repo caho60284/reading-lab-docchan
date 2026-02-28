@@ -171,10 +171,11 @@ border-radius:16px;
 display:flex;
 align-items:center;
 justify-content:center;
-font-size:17px;
+font-size:18px;
 font-weight:600;
 color:#fff;
 border:none;
+cursor:pointer;
 }
 
 .playBtn{
@@ -185,10 +186,13 @@ background:linear-gradient(135deg,#2ea79b,#1f8f84);
 background:linear-gradient(135deg,#7b7be8,#5a5ad6);
 }
 
-.voiceBtn{
-background:linear-gradient(135deg,#ff4b4b,#d32f2f);
-gap:8px;
-padding:0 12px;
+.voiceBtn select{
+position:absolute;
+inset:0;
+width:100%;
+height:100%;
+opacity:0;
+cursor:pointer;
 }
 
 .voiceBtn select{
