@@ -2,151 +2,213 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Reading Lab</title>
 
 <style>
-body{
-font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto;
-margin:0;
-background:#f2f2f7;
-}
+*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+body{margin:0;background:#f3f5f9;color:#222}
 
 header{
-padding:18px;
-font-weight:700;
-font-size:22px;
+position:sticky;top:0;
 background:#fff;
+padding:16px 14px 10px;
 box-shadow:0 2px 6px rgba(0,0,0,.08);
+z-index:10
 }
 
-.main{
-padding:18px;
-}
+h1{margin:0;font-size:22px}
+.lab{font-size:12px;color:#888;margin-top:2px}
+
+.main{padding:14px}
 
 textarea{
 width:100%;
-height:160px;
+min-height:200px;
 border-radius:14px;
 border:1px solid #ddd;
-padding:12px;
+padding:14px;
 font-size:16px;
-resize:none;
+line-height:1.5;
+resize:vertical;
+background:#fff
 }
 
 .btnRow{
 display:flex;
-gap:10px;
-margin-top:14px;
+gap:12px;
+margin-top:12px;
 }
 
 .btn{
 flex:1;
-padding:14px;
+height:54px;
 border:none;
 border-radius:14px;
+font-size:17px;
 color:#fff;
-font-weight:600;
-font-size:16px;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+transition:transform .08s, box-shadow .08s;
 }
 
-.btnClear{background:linear-gradient(135deg,#7b6dff,#5a8bff)}
-.btnRead{background:linear-gradient(135deg,#29b6a6,#4caf50)}
-.btnImport{background:linear-gradient(135deg,#4a90e2,#357ae8)}
+.btn:active{
+transform:scale(.97);
+box-shadow:0 2px 6px rgba(0,0,0,.15) inset;
+}
+
+.btnRead{background:#26a69a}
+.btnClear{background:linear-gradient(135deg,#7b61ff,#5a8dee)}
+.btnImport{background:#2f86d6}
 
 .modal{
 position:fixed;
 inset:0;
-background:rgba(0,0,0,.3);
+background:rgba(0,0,0,.35);
 display:none;
 align-items:center;
 justify-content:center;
+padding:18px
 }
 
 .box{
 background:#fff;
+width:100%;
+max-width:560px;
 border-radius:18px;
-padding:18px;
-width:92%;
-max-width:520px;
+padding:20px 18px 18px;
+position:relative;
+max-height:85vh;
+overflow:auto;
+box-shadow:0 10px 30px rgba(0,0,0,.15)
+}
+
+.closeX{
+position:absolute;
+top:10px;
+right:12px;
+font-size:20px;
+color:#999;
+cursor:pointer
+}
+
+.sentence{
+margin-bottom:12px;
+line-height:1.6;
+cursor:pointer;
+padding:6px 6px;
+border-radius:8px;
+transition:background .15s;
+}
+
+.sentence.active{background:#e0f2f1}
+.sentence.playing{background:#c8ede9}
+
+.translation{
+color:#26a69a;
+margin-top:6px;
+margin-bottom:10px;
+display:none;
+line-height:1.55
+}
+
+#ocrLoad{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.35);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:50;
+color:#fff;
+font-size:18px;
+flex-direction:column;
+gap:10px
+}
+
+.spinner{
+width:36px;
+height:36px;
+border:4px solid rgba(255,255,255,.3);
+border-top:4px solid #fff;
+border-radius:50%;
+animation:spin 1s linear infinite
+}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.voiceSelect{
+flex:1;
+height:54px;
+border:none;
+border-radius:14px;
+padding:0 12px;
+font-size:16px;
+color:#fff;
+background:linear-gradient(135deg,#ff4b4b,#d32f2f);
+appearance:none;
+display:flex;
+align-items:center;
+}
+
+.voiceSelect option{
+color:#000;
+background:#fff;
 }
 
 .readerToolbar{
 display:flex;
-gap:10px;
+gap:12px;
 margin-bottom:14px;
 }
 
 .toolBtn{
 flex:1;
-padding:14px;
-border-radius:14px;
-border:none;
-color:#fff;
-font-weight:600;
-font-size:16px;
+height:56px;
+border-radius:16px;
 display:flex;
 align-items:center;
 justify-content:center;
-gap:8px;
+font-size:17px;
+font-weight:600;
+color:#fff;
+border:none;
 }
 
-.playBtn{background:linear-gradient(135deg,#29b6a6,#4caf50)}
-.stopBtn{background:linear-gradient(135deg,#7b6dff,#5a8bff)}
+.playBtn{
+background:linear-gradient(135deg,#2ea79b,#1f8f84);
+}
+
+.stopBtn{
+background:linear-gradient(135deg,#7b7be8,#5a5ad6);
+}
 
 .voiceBtn{
-flex:1;
-position:relative;
 background:linear-gradient(135deg,#ff4b4b,#d32f2f);
-border-radius:14px;
-display:flex;
-align-items:center;
-justify-content:center;
-color:#fff;
-font-weight:600;
-overflow:hidden;
-}
-
-.voiceBtn span{
-pointer-events:none;
+gap:8px;
+padding:0 12px;
 }
 
 .voiceBtn select{
-position:absolute;
-inset:0;
-width:100%;
-height:100%;
-opacity:0;
-cursor:pointer;
-}
-
-.sentence{
-margin:10px 0;
-padding:10px 12px;
-border-radius:12px;
-}
-
-.active{
-background:#cfe9e6;
-}
-
-.translation{
-color:#3c9c94;
-margin-top:6px;
-}
-
-.phrase{
-text-decoration:underline;
-text-decoration-color:#ff6b6b;
-text-decoration-thickness:2px;
-cursor:pointer;
+flex:1;
+border:none;
+background:transparent;
+color:#fff;
+font-size:16px;
+outline:none;
+appearance:none;
 }
 </style>
 </head>
 
 <body>
 
-<header>📘 Reading Lab</header>
+<header>
+<h1>📘 Reading Lab</h1>
+<div class="lab">LAB VERSION</div>
+</header>
 
 <div class="main">
 <textarea id="inputText" placeholder="Paste English text..."></textarea>
@@ -160,107 +222,51 @@ cursor:pointer;
 <input type="file" id="imgInput" accept="image/*" style="display:none">
 </div>
 
+<div id="ocrLoad">
+<div class="spinner"></div>
+<div>Scanning text...</div>
+</div>
+
 <div class="modal" id="readerModal">
 <div class="box">
 
 <div class="readerToolbar">
-<button class="toolBtn playBtn" onclick="playAll()">🔊 Play All</button>
+
+<button class="toolBtn playBtn" onclick="playAll()">🔊 Play</button>
 <button class="toolBtn stopBtn" onclick="stopSpeak()">⏹ Stop</button>
 
-<div class="voiceBtn">
-<span>🎙 Voice</span>
+<div class="toolBtn voiceBtn">
+<span>🎙️</span>
 <select id="voiceSelect"></select>
 </div>
+
 </div>
 
-<div id="readerContent"></div>
+<div class="closeX" onclick="closeReader()">✕</div>
+<div id="reader"></div>
 
 </div>
 </div>
 
 <script>
-/* ===== PHRASES ===== */
-const PHRASES={
-"turn out":"ternyata",
-"deal with":"menangani",
-"give up":"menyerah",
-"carry on":"melanjutkan",
-"figure out":"memahami",
-"come up":"mengusulkan",
-"work out":"berhasil",
-"find out":"menemukan",
-"look after":"merawat",
-"take care of":"mengurus"
-}
-
-/* ===== DETECT PHRASES MULTI ===== */
-function detectPhrases(text){
-let result=text
-Object.keys(PHRASES).forEach(p=>{
-const re=new RegExp("\\b"+p+"\\b","gi")
-result=result.replace(re,
-`<span class="phrase" data-p="${p}">${p}</span>`)
-})
-return result
-}
-
-/* ===== TRANSLATE MOCK ===== */
-function translateSentence(s){
-return s
-.replace(/turn out/gi,"ternyata")
-.replace(/deal with/gi,"menangani")
-.replace(/give up/gi,"menyerah")
-.replace(/carry on/gi,"melanjutkan")
-.replace(/figure out/gi,"memahami")
-.replace(/come up/gi,"mengusulkan")
-.replace(/work out/gi,"berhasil")
-.replace(/find out/gi,"menemukan")
-.replace(/look after/gi,"merawat")
-.replace(/take care of/gi,"mengurus")
-}
-
-/* ===== RENDER ===== */
-function renderSentences(text){
-const container=document.getElementById("readerContent")
-container.innerHTML=""
-
-const sentences=text.match(/[^\.!\?]+[\.!\?]+/g)||[]
-
-sentences.forEach((s,i)=>{
-const div=document.createElement("div")
-div.className="sentence"
-div.dataset.i=i
-
-const en=document.createElement("div")
-en.innerHTML=detectPhrases(s.trim())
-
-const tr=document.createElement("div")
-tr.className="translation"
-tr.textContent=translateSentence(s.trim())
-
-div.appendChild(en)
-div.appendChild(tr)
-
-container.appendChild(div)
-})
-}
-
-/* ===== READER ===== */
-function openReader(){
-const txt=document.getElementById("inputText").value
-if(!txt.trim())return
-renderSentences(txt)
-document.getElementById("readerModal").style.display="flex"
-}
-
-/* ===== SPEECH ===== */
-let synth=window.speechSynthesis
+let sentences=[]
+let synth = window.speechSynthesis
+let speakingAll = false
+let currentIndex = -1
 let voices=[]
 
 function loadVoices(){
-voices=synth.getVoices()
+voices = synth.getVoices()
 const sel=document.getElementById("voiceSelect")
-sel.innerHTML=""
+if(!sel) return
+
+if(!voices.length){
+setTimeout(loadVoices,200)
+return
+}
+
+sel.innerHTML='<option value="">Default Voice</option>'
+
 voices.forEach((v,i)=>{
 const o=document.createElement("option")
 o.value=i
@@ -272,45 +278,162 @@ sel.appendChild(o)
 speechSynthesis.onvoiceschanged=loadVoices
 loadVoices()
 
-function speak(text){
-const u=new SpeechSynthesisUtterance(text)
+function getSelectedVoice(){
 const sel=document.getElementById("voiceSelect")
-if(sel.value)u.voice=voices[sel.value]
-synth.speak(u)
+if(!sel||sel.value==="") return null
+return voices[sel.value]
 }
 
-function playAll(){
-const s=document.querySelectorAll(".sentence")
-let i=0
-function next(){
-if(i>=s.length)return
-document.querySelectorAll(".sentence").forEach(e=>e.classList.remove("active"))
-s[i].classList.add("active")
-speak(s[i].innerText)
-i++
-setTimeout(next,2500)
+function openReader(){
+const text=document.getElementById("inputText").value.trim()
+if(!text)return
+splitSentences(text)
+renderSentences()
+document.getElementById("readerModal").style.display="flex"
 }
-next()
+
+function closeReader(){
+document.getElementById("readerModal").style.display="none"
+stopSpeak()
+}
+
+function splitSentences(text){
+sentences = text
+.replace(/\n/g," ")
+.match(/[^\.!\?]+[\.!\?]+/g) || [text]
+}
+
+function renderSentences(){
+const box=document.getElementById("reader")
+box.innerHTML=""
+
+sentences.forEach((s,i)=>{
+const wrap=document.createElement("div")
+wrap.className="sentence"
+wrap.innerText=s.trim()
+wrap.onclick=()=>{
+selectSentence(i)
+speakSentence(i)
+}
+
+const trans=document.createElement("div")
+trans.className="translation"
+trans.id="tr"+i
+
+wrap.appendChild(trans)
+box.appendChild(wrap)
+})
+}
+
+function selectSentence(i){
+document.querySelectorAll(".sentence").forEach(s=>s.classList.remove("active"))
+document.querySelectorAll(".translation").forEach(t=>t.style.display="none")
+
+const sent=document.querySelectorAll(".sentence")[i]
+const trans=document.getElementById("tr"+i)
+
+sent.classList.add("active")
+trans.style.display="block"
+trans.innerText="Translating..."
+
+fetch("https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=id&dt=t&q="+encodeURIComponent(sentences[i]))
+.then(r=>r.json())
+.then(data=>{
+let hasil=""
+data[0].forEach(b=>hasil+=b[0])
+trans.innerText=hasil
+})
+}
+
+function clearText(){
+const el=document.getElementById("inputText")
+el.value=""
+el.focus()
+}
+
+function speakSentence(i){
+synth.cancel()
+currentIndex=i
+highlightPlaying(i)
+
+const utter=new SpeechSynthesisUtterance(sentences[i])
+utter.lang="en-US"
+utter.rate=0.9
+
+const v=getSelectedVoice()
+if(v) utter.voice=v
+
+utter.onend=()=>removePlaying()
+
+synth.speak(utter)
+}
+
+function highlightPlaying(i){
+removePlaying()
+document.querySelectorAll(".sentence")[i].classList.add("playing")
+}
+
+function removePlaying(){
+document.querySelectorAll(".sentence").forEach(s=>s.classList.remove("playing"))
 }
 
 function stopSpeak(){
+speakingAll=false
 synth.cancel()
-document.querySelectorAll(".sentence").forEach(e=>e.classList.remove("active"))
+removePlaying()
 }
 
-/* ===== CLEAR ===== */
-function clearText(){
-document.getElementById("inputText").value=""
+function playAll(){
+if(!sentences.length)return
+speakingAll=true
+synth.cancel()
+let i=0
+
+function next(){
+if(!speakingAll||i>=sentences.length){removePlaying();return}
+
+highlightPlaying(i)
+
+const utter=new SpeechSynthesisUtterance(sentences[i])
+utter.lang="en-US"
+utter.rate=0.9
+
+const v=getSelectedVoice()
+if(v) utter.voice=v
+
+utter.onend=()=>{
+i++
+next()
 }
 
-/* ===== CLICK PHRASE ===== */
-document.addEventListener("click",e=>{
-if(e.target.classList.contains("phrase")){
-const p=e.target.dataset.p
-alert(p+" = "+PHRASES[p])
+synth.speak(utter)
 }
-})
+
+next()
+}
+
+document.getElementById("imgInput").addEventListener("change", handleImage)
+
+async function handleImage(e){
+const file=e.target.files[0]
+if(!file)return
+
+showOCR(true)
+
+const { data:{ text } } = await Tesseract.recognize(file,"eng")
+
+showOCR(false)
+
+if(!text.trim())return
+document.getElementById("inputText").value=text.trim()
+}
+
+function showOCR(v){
+document.getElementById("ocrLoad").style.display=v?"flex":"none"
+}
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
 </body>
 </html>
