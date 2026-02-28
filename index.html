@@ -165,7 +165,6 @@ background:#fff;
 }
 
 .toolBtn{
-  flex:1;
   height:56px;
   border:none;
   border-radius:18px;
@@ -176,32 +175,27 @@ background:#fff;
   align-items:center;
   justify-content:center;
   gap:10px;
-  padding:0 16px;
+  padding:0 18px;
+  white-space:nowrap;      /* emoji + teks 1 baris */
 }
 
 .playBtn{
+  flex:1.1;
   background:linear-gradient(135deg,#4caf93,#66bb6a);
 }
 
 .stopBtn{
+  flex:1.1;
   background:linear-gradient(135deg,#7b7be8,#5c6bc0);
 }
 
 .voiceBtn{
-  flex:1.4;              /* panjang sedang (versi bagus) */
-  height:56px;
-  border-radius:18px;
+  flex:1.6;               /* sedikit lebih panjang */
   background:linear-gradient(135deg,#ff5a5a,#d84343);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  color:#fff;
-  font-weight:600;
   position:relative;
 }
 
-/* select full clickable area */
+/* klik seluruh area merah */
 .voiceBtn select{
   position:absolute;
   inset:0;
@@ -247,7 +241,7 @@ background:#fff;
 <button class="toolBtn stopBtn" onclick="stopSpeak()">⏹ Stop</button>
 
 <div class="toolBtn voiceBtn">
-<span>🎙️Voice </span>
+<span>🎙️ Voice</span>
 <select id="voiceSelect"></select>
 </div>
 
