@@ -144,6 +144,12 @@ color:#fff;
 background:linear-gradient(135deg,#7b61ff,#5a8dee);
 color:#fff;
 }
+
+.btnImport{
+  background:#2f86d6;
+  color:#fff;
+}
+
 </style>
 </head>
 
@@ -160,7 +166,7 @@ color:#fff;
 <div class="btnRow">
   <button class="btn btnClear" onclick="clearText()">✕ Clear</button>
   <button class="btn btnRead" onclick="openReader()">Read</button>
-  <button class="btn btnClear" onclick="document.getElementById('imgInput').click()">📷 Import</button>
+  <button class="btn btnImport" onclick="document.getElementById('imgInput').click()">📥 Import</button>
 </div>
 
 <input type="file" id="imgInput" accept="image/*" style="display:none">
