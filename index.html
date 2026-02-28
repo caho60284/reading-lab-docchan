@@ -166,16 +166,17 @@ background:#fff;
 
 .toolBtn{
   flex:1;
+  height:56px;
   border:none;
-  border-radius:16px;
-  padding:14px 12px;
+  border-radius:18px;
   font-size:18px;
   font-weight:600;
   color:#fff;
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:8px;
+  gap:10px;
+  padding:0 16px;
 }
 
 .playBtn{
@@ -187,19 +188,20 @@ background:#fff;
 }
 
 .voiceBtn{
-  position:relative;
-  flex:1.6; /* Voice lebih panjang seperti versi bagus */
+  flex:1.4;              /* panjang sedang (versi bagus) */
+  height:56px;
+  border-radius:18px;
   background:linear-gradient(135deg,#ff5a5a,#d84343);
-  border-radius:16px;
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:8px;
+  gap:10px;
   color:#fff;
   font-weight:600;
+  position:relative;
 }
 
-/* select full-area clickable */
+/* select full clickable area */
 .voiceBtn select{
   position:absolute;
   inset:0;
