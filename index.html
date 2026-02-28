@@ -34,7 +34,6 @@ resize:vertical;
 background:#fff
 }
 
-/* ===== BUTTONS ===== */
 .btnRow{
 display:flex;
 gap:12px;
@@ -64,7 +63,6 @@ box-shadow:0 2px 6px rgba(0,0,0,.15) inset;
 .btnClear{background:linear-gradient(135deg,#7b61ff,#5a8dee)}
 .btnImport{background:#2f86d6}
 
-/* ===== MODAL ===== */
 .modal{
 position:fixed;
 inset:0;
@@ -96,7 +94,6 @@ color:#999;
 cursor:pointer
 }
 
-/* ===== SENTENCE ===== */
 .sentence{
 margin-bottom:12px;
 line-height:1.6;
@@ -117,7 +114,6 @@ display:none;
 line-height:1.55
 }
 
-/* ===== OCR LOADING ===== */
 #ocrLoad{
 position:fixed;
 inset:0;
@@ -142,7 +138,6 @@ animation:spin 1s linear infinite
 }
 
 @keyframes spin{to{transform:rotate(360deg)}}
-
 </style>
 </head>
 
@@ -165,7 +160,6 @@ animation:spin 1s linear infinite
 <input type="file" id="imgInput" accept="image/*" style="display:none">
 </div>
 
-<!-- OCR LOADING -->
 <div id="ocrLoad">
 <div class="spinner"></div>
 <div>Scanning text...</div>
@@ -177,6 +171,8 @@ animation:spin 1s linear infinite
 <div style="display:flex;gap:10px;margin-bottom:10px">
 <button class="btn btnRead" onclick="playAll()">🔊 Play All</button>
 <button class="btn btnClear" onclick="stopSpeak()">⏹ Stop</button>
+
+<select id="voiceSelect" style="flex:1;border-radius:12px;border:1px solid #ddd;padding:8px"></select>
 </div>
 
 <div class="closeX" onclick="closeReader()">✕</div>
@@ -190,6 +186,36 @@ let sentences=[]
 let synth = window.speechSynthesis
 let speakingAll = false
 let currentIndex = -1
+let voices=[]
+
+function loadVoices(){
+voices = synth.getVoices()
+const sel=document.getElementById("voiceSelect")
+if(!sel) return
+
+if(!voices.length){
+setTimeout(loadVoices,200)
+return
+}
+
+sel.innerHTML='<option value="">Default Voice</option>'
+
+voices.forEach((v,i)=>{
+const o=document.createElement("option")
+o.value=i
+o.textContent=v.name+" ("+v.lang+")"
+sel.appendChild(o)
+})
+}
+
+speechSynthesis.onvoiceschanged=loadVoices
+loadVoices()
+
+function getSelectedVoice(){
+const sel=document.getElementById("voiceSelect")
+if(!sel||sel.value==="") return null
+return voices[sel.value]
+}
 
 function openReader(){
 const text=document.getElementById("inputText").value.trim()
@@ -267,9 +293,10 @@ const utter=new SpeechSynthesisUtterance(sentences[i])
 utter.lang="en-US"
 utter.rate=0.9
 
-utter.onend=()=>{
-removePlaying()
-}
+const v=getSelectedVoice()
+if(v) utter.voice=v
+
+utter.onend=()=>removePlaying()
 
 synth.speak(utter)
 }
@@ -304,6 +331,9 @@ const utter=new SpeechSynthesisUtterance(sentences[i])
 utter.lang="en-US"
 utter.rate=0.9
 
+const v=getSelectedVoice()
+if(v) utter.voice=v
+
 utter.onend=()=>{
 i++
 next()
@@ -315,7 +345,6 @@ synth.speak(utter)
 next()
 }
 
-/* OCR */
 document.getElementById("imgInput").addEventListener("change", handleImage)
 
 async function handleImage(e){
