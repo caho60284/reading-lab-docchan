@@ -261,16 +261,106 @@ let currentIndex = -1
 let voices=[]
 
 const PHRASES = [
-{base:"take care", forms:["take","takes","took","taking","taken"], tail:"care"},
-{base:"deal with", forms:["deal","deals","dealt","dealing"], tail:"with"},
-{base:"turn out", forms:["turn","turns","turned","turning"], tail:"out"},
-{base:"give up", forms:["give","gives","gave","giving","given"], tail:"up"},
-{base:"carry on", forms:["carry","carries","carried","carrying"], tail:"on"},
-{base:"find out", forms:["find","finds","found","finding"], tail:"out"},
-{base:"work out", forms:["work","works","worked","working"], tail:"out"},
-{base:"look after", forms:["look","looks","looked","looking"], tail:"after"},
-{base:"come up with", forms:["come","comes","came","coming"], tail:"up with"},
-{base:"make up", forms:["make","makes","made","making"], tail:"up"}
+"stay up",
+"stay over",
+"stay away",
+"stay calm",
+"stay focused",
+"make a decision",
+"make a mistake",
+"make an effort",
+"make progress",
+"make a plan",
+"make money",
+"make a living",
+"make a call",
+"make a deal",
+"make a change",
+"take a break",
+"take a seat",
+"take a look",
+"take a chance",
+"take a risk",
+"take action",
+"take notes",
+"take time",
+"take place",
+"have a look",
+"have a seat",
+"have a rest",
+"have a try",
+"have fun",
+"have trouble",
+"have time",
+"have a point",
+"do homework",
+"do business",
+"do exercise",
+"do research",
+"do the dishes",
+"do the laundry",
+"pay attention",
+"pay a visit",
+"pay the bill",
+"pay respect",
+"catch a cold",
+"catch fire",
+"catch sight",
+"catch up",
+"break the news",
+"break the law",
+"break a record",
+"hold a meeting",
+"hold hands",
+"hold breath",
+"keep a secret",
+"keep a promise",
+"keep quiet",
+"keep safe",
+"run a business",
+"run a test",
+"run late",
+"over the moon",
+"under the weather",
+"hit the sack",
+"piece of cake",
+"once in a while",
+"out of the blue",
+"on the same page",
+"the bottom line",
+"the big picture",
+"the last straw",
+"on cloud nine",
+"back to square one",
+"cut to the chase",
+"come clean",
+"wrap it up",
+"brush it off",
+"chill out",
+"look into it",
+"figure it out",
+"pick up the pace",
+"cut it out",
+"take it off",
+"step in",
+"level up",
+"join in",
+"in the end",
+"at the same time",
+"all of a sudden",
+"right away",
+"as soon as",
+"so far",
+"by the way",
+"on the way",
+"in a hurry",
+"in a while",
+"for a while",
+"for now",
+"from now on",
+"at first",
+"at last",
+"at once"
 ]
 
 function loadVoices(){
@@ -402,7 +492,7 @@ function translatePhrase(base){
 function showPhrase(p){
   const phrase = PHRASES[p]
   if(!phrase) return
-  alert(phrase.base + " = " + translatePhrase(phrase.base))
+  alert(phrase)
 }
 
 function clearText(){
@@ -496,11 +586,11 @@ function highlightPhrases(text){
   let out = text
 
   PHRASES.forEach((p,i)=>{
-    const verbs = p.forms.join("|")
-    const regex = new RegExp(`\\b(${verbs})\\s+${p.tail}\\b`,"gi")
+    const escaped = p.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")
+    const regex = new RegExp(`\\b${escaped}\\b`,"gi")
 
     out = out.replace(regex,
-      `<span class="phrase" data-p="${i}" style="text-decoration:underline;color:#e53935;font-weight:600">$&</span>`
+      `<span class="phrase" data-p="${i}" style="text-decoration:underline;color:#e53935;font-weight:600">${p}</span>`
     )
   })
 
