@@ -245,6 +245,12 @@ background:#fff;
 <select id="voiceSelect"></select>
 </div>
 
+<div class="phrasePanel">
+  <input id="phraseText" placeholder="phrase">
+  <input id="phraseMeaning" placeholder="meaning">
+  <button onclick="savePhrase()">Save Phrase</button>
+</div>
+
 </div>
 
 <div class="closeX" onclick="closeReader()">✕</div>
@@ -505,6 +511,19 @@ function importPhrases(text){
     }
   })
   savePhrases()
+}
+
+function savePhrase(){
+  const t = document.getElementById("phraseText").value.trim()
+  const m = document.getElementById("phraseMeaning").value.trim()
+  if(!t || !m) return
+
+  PHRASES.push({text:t, meaning:m})
+  savePhrases()
+
+  document.getElementById("phraseText").value=""
+  document.getElementById("phraseMeaning").value=""
+  alert("Saved")
 }
 
 </script>
