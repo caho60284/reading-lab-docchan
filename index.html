@@ -441,13 +441,13 @@ tr.innerText=hasil
 
 /* ===== SPEECH ===== */
 function speakSentence(i){
+  const all = document.querySelectorAll(".sentence")
+  all.forEach(el=>el.classList.remove("active"))
+
+  const active = all[i]
+  if(active) active.classList.add("active")
+
   synth.cancel()
-
-  document.querySelectorAll(".sentence")
-    .forEach(el=>el.classList.remove("speaking"))
-
-  const el = document.querySelector(`.sentence[data-i="${i}"]`)
-  if(el) el.classList.add("speaking")
 
   const u = new SpeechSynthesisUtterance(sentences[i])
   u.lang="en-US"
@@ -456,7 +456,7 @@ function speakSentence(i){
   if(v) u.voice=v
 
   u.onend=()=>{
-    if(el) el.classList.remove("speaking")
+    if(active) active.classList.remove("active")
   }
 
   synth.speak(u)
