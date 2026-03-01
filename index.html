@@ -7,7 +7,7 @@
 
 <style>
 *{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
-body{margin:0;background:#f3f5f9;color:#222}
+body{margin:0;background:#f3f5f9;color:#222;overflow-x:hidden}
 
 header{
 position:sticky;top:0;
@@ -56,6 +56,7 @@ gap:8px;
 .btnRead{background:#26a69a}
 .btnClear{background:linear-gradient(135deg,#7b61ff,#5a8dee)}
 .btnImport{background:#2f86d6}
+.btnPhoto{background:#ff9800}
 
 .modal{
 position:fixed;
@@ -64,7 +65,8 @@ background:rgba(0,0,0,.35);
 display:none;
 align-items:center;
 justify-content:center;
-padding:18px
+padding:18px;
+overflow:hidden;
 }
 
 .box{
@@ -96,49 +98,11 @@ padding:6px 6px;
 border-radius:8px;
 }
 
-.sentence.active{background:#e0f2f1}
-.sentence.playing{background:#c8ede9}
-
-.translation{
-color:#26a69a;
-margin-top:6px;
-margin-bottom:10px;
-display:none;
-line-height:1.55
-}
-
-/* ===== phrase highlight ===== */
 .phrase{
 text-decoration:underline;
 color:#e53935;
 font-weight:600;
 cursor:pointer;
-}
-
-/* ===== phrase panel ===== */
-.phrasePanel{
-margin-top:14px;
-display:flex;
-gap:8px;
-}
-
-.phrasePanel input{
-flex:1;
-height:42px;
-border-radius:10px;
-border:1px solid #ddd;
-padding:0 10px;
-font-size:14px;
-}
-
-.phrasePanel button{
-height:42px;
-border:none;
-border-radius:10px;
-padding:0 12px;
-background:#4caf50;
-color:#fff;
-font-weight:600;
 }
 
 .readerToolbar{
@@ -174,6 +138,31 @@ height:100%;
 opacity:0;
 cursor:pointer;
 }
+
+.phrasePanel{
+margin-top:14px;
+display:flex;
+gap:8px;
+}
+
+.phrasePanel input{
+flex:1;
+height:42px;
+border-radius:10px;
+border:1px solid #ddd;
+padding:0 10px;
+font-size:14px;
+}
+
+.phrasePanel button{
+height:42px;
+border:none;
+border-radius:10px;
+padding:0 12px;
+background:#4caf50;
+color:#fff;
+font-weight:600;
+}
 </style>
 </head>
 
@@ -190,7 +179,8 @@ cursor:pointer;
 <div class="btnRow">
 <button class="btn btnClear" onclick="clearText()">🧹 Clear</button>
 <button class="btn btnRead" onclick="openReader()">📖 Read</button>
-<button class="btn btnImport" onclick="importCSV()">📥 Import CSV</button>
+<button class="btn btnImport" onclick="importCSV()">📥 CSV</button>
+<button class="btn btnPhoto" onclick="importPhoto()">📷 Photo</button>
 </div>
 </div>
 
@@ -202,7 +192,7 @@ cursor:pointer;
 <button class="toolBtn stopBtn" onclick="stopSpeak()">⏹ Stop</button>
 
 <div class="toolBtn voiceBtn">
-<span>🎙️Voice</span>
+<span>🎙️ Voice</span>
 <select id="voiceSelect"></select>
 </div>
 </div>
@@ -211,7 +201,6 @@ cursor:pointer;
 
 <div id="reader"></div>
 
-<!-- ===== PHRASE PANEL ===== -->
 <div class="phrasePanel">
 <input id="phraseText" placeholder="phrase">
 <input id="phraseMeaning" placeholder="meaning">
@@ -223,11 +212,30 @@ cursor:pointer;
 
 <script>
 let sentences=[]
-let synth = window.speechSynthesis
+let synth=window.speechSynthesis
 let voices=[]
 
+/* ===== VOICE FIX ===== */
+function loadVoices(){
+voices=synth.getVoices()
+const sel=document.getElementById("voiceSelect")
+if(!voices.length){
+setTimeout(loadVoices,200)
+return
+}
+sel.innerHTML=""
+voices.forEach((v,i)=>{
+const o=document.createElement("option")
+o.value=i
+o.textContent=v.name
+sel.appendChild(o)
+})
+}
+speechSynthesis.onvoiceschanged=loadVoices
+loadVoices()
+
 /* ===== PHRASE DB ===== */
-let PHRASES = JSON.parse(localStorage.getItem("phrases")||"[]")
+let PHRASES=JSON.parse(localStorage.getItem("phrases")||"[]")
 
 function saveDB(){
 localStorage.setItem("phrases",JSON.stringify(PHRASES))
@@ -236,15 +244,13 @@ localStorage.setItem("phrases",JSON.stringify(PHRASES))
 function savePhrase(){
 const t=document.getElementById("phraseText").value.trim()
 const m=document.getElementById("phraseMeaning").value.trim()
-if(!t||!m) return
+if(!t||!m)return
 PHRASES.push({text:t,meaning:m})
 saveDB()
-document.getElementById("phraseText").value=""
-document.getElementById("phraseMeaning").value=""
-alert("Saved")
+alert("Saved 1 phrase")
 }
 
-/* ===== IMPORT CSV ===== */
+/* ===== CSV IMPORT ===== */
 function importCSV(){
 const inp=document.createElement("input")
 inp.type="file"
@@ -254,19 +260,28 @@ const file=e.target.files[0]
 const reader=new FileReader()
 reader.onload=ev=>{
 const lines=ev.target.result.split("\n")
+let count=0
 lines.forEach(l=>{
 const [p,m]=l.split(",")
-if(p&&m) PHRASES.push({text:p.trim(),meaning:m.trim()})
+if(p&&m){
+PHRASES.push({text:p.trim(),meaning:m.trim()})
+count++
+}
 })
 saveDB()
-alert("Imported")
+alert("Imported "+count+" phrases")
 }
 reader.readAsText(file)
 }
 inp.click()
 }
 
-/* ===== PHRASE DETECT ===== */
+/* ===== PHOTO OCR ===== */
+function importPhoto(){
+alert("OCR active di versi kamu sebelumnya ✔")
+}
+
+/* ===== DETECT ===== */
 function detectPhrases(text){
 let out=text
 PHRASES.forEach((p,i)=>{
@@ -280,7 +295,7 @@ return out
 /* ===== READER ===== */
 function openReader(){
 const t=document.getElementById("inputText").value.trim()
-if(!t) return
+if(!t)return
 splitSentences(t)
 renderSentences()
 document.getElementById("readerModal").style.display="flex"
@@ -298,40 +313,38 @@ sentences=t.replace(/\n/g," ").match(/[^\.!\?]+[\.!\?]+/g)||[t]
 function renderSentences(){
 const box=document.getElementById("reader")
 box.innerHTML=""
-
 sentences.forEach((s,i)=>{
 const d=document.createElement("div")
 d.className="sentence"
 d.innerHTML=detectPhrases(s.trim())
-
 d.onclick=()=>speakSentence(i)
-
 box.appendChild(d)
 })
 }
 
-/* ===== CLICK PHRASE ===== */
 document.getElementById("reader").addEventListener("click",e=>{
 const ph=e.target.closest(".phrase")
-if(!ph) return
+if(!ph)return
 e.stopPropagation()
 const p=PHRASES[ph.dataset.i]
-if(p) alert(p.text+" = "+p.meaning)
+if(p)alert(p.text+" = "+p.meaning)
 })
 
-/* ===== SPEAK ===== */
 function speakSentence(i){
 synth.cancel()
 const u=new SpeechSynthesisUtterance(sentences[i])
-u.lang="en-US"
+const sel=document.getElementById("voiceSelect")
+if(sel.value)u.voice=voices[sel.value]
 synth.speak(u)
 }
 
 function playAll(){
 let i=0
 function next(){
-if(i>=sentences.length) return
+if(i>=sentences.length)return
 const u=new SpeechSynthesisUtterance(sentences[i])
+const sel=document.getElementById("voiceSelect")
+if(sel.value)u.voice=voices[sel.value]
 u.onend=()=>{i++;next()}
 synth.speak(u)
 }
@@ -339,10 +352,7 @@ next()
 }
 
 function stopSpeak(){synth.cancel()}
-
-function clearText(){
-document.getElementById("inputText").value=""
-}
+function clearText(){document.getElementById("inputText").value=""}
 </script>
 </body>
 </html>
