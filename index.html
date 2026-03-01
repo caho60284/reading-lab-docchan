@@ -214,6 +214,12 @@ cursor:pointer;
 #phrasePanel label{
 cursor:pointer;
 }
+
+.speaking{
+  background:#d8ecff;
+  border-radius:10px;
+  padding:2px 4px;
+}
 </style>
 </head>
 
@@ -426,17 +432,23 @@ tr.innerText=hasil
 
 /* ===== SPEECH ===== */
 function speakSentence(i){
-  if(speakingLock) return   // ← TAMBAH
-
   synth.cancel()
 
-  const u=new SpeechSynthesisUtterance(sentences[i])
-  u.lang="en-US"
-  const v=getVoice()
-  if(v)u.voice=v
+  document.querySelectorAll(".sentence")
+    .forEach(el=>el.classList.remove("speaking"))
 
-  speakingLock=true        // ← TAMBAH
-  u.onend=()=>{speakingLock=false}   // ← TAMBAH
+  const el = document.querySelector(`.sentence[data-i="${i}"]`)
+  if(el) el.classList.add("speaking")
+
+  const u = new SpeechSynthesisUtterance(sentences[i])
+  u.lang="en-US"
+
+  const v = getVoice()
+  if(v) u.voice=v
+
+  u.onend=()=>{
+    if(el) el.classList.remove("speaking")
+  }
 
   synth.speak(u)
 }
