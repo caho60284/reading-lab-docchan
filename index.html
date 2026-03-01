@@ -164,11 +164,6 @@ background:#fff;
   margin-bottom:14px;
 }
 
-.reader{
-  display:flex;
-  flex-direction:column;
-}
-
 .toolBtn{
   height:56px;
   border:none;
@@ -208,37 +203,6 @@ background:#fff;
   height:100%;
   opacity:0;
   cursor:pointer;
-}
-
-.phrasePanel{
-  width:100%;
-  display:flex;
-  gap:6px;
-  margin-top:8px;
-}
-
-.phrasePanel input{
-  flex:1;
-  padding:6px 8px;
-  border-radius:8px;
-  border:1px solid #ddd;
-  font-size:14px;
-}
-
-.phrasePanel button{
-  padding:6px 10px;
-  border:none;
-  border-radius:8px;
-  background:#4caf50;
-  color:#fff;
-  font-weight:600;
-}
-
-.phrasePanel{
-  display:flex;
-  gap:6px;
-  margin-top:8px;
-  width:100%;
 }
 
 </style>
@@ -281,22 +245,10 @@ background:#fff;
 <select id="voiceSelect"></select>
 </div>
 
-<div class="phrasePanel">
-  <input id="phraseText" placeholder="phrase">
-  <input id="phraseMeaning" placeholder="meaning">
-  <button onclick="savePhrase()">Save Phrase</button>
-</div>
-
 </div>
 
 <div class="closeX" onclick="closeReader()">✕</div>
 <div id="reader"></div>
-
-<div class="phrasePanel">
-  <input id="phraseText" placeholder="phrase">
-  <input id="phraseMeaning" placeholder="meaning">
-  <button onclick="savePhrase()">Save</button>
-</div>
 
 </div>
 </div>
@@ -553,19 +505,6 @@ function importPhrases(text){
     }
   })
   savePhrases()
-}
-
-function savePhrase(){
-  const t = document.getElementById("phraseText").value.trim()
-  const m = document.getElementById("phraseMeaning").value.trim()
-  if(!t || !m) return
-
-  PHRASES.push({text:t, meaning:m})
-  savePhrases()
-
-  document.getElementById("phraseText").value=""
-  document.getElementById("phraseMeaning").value=""
-  alert("Saved")
 }
 
 </script>
