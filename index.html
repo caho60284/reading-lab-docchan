@@ -274,6 +274,7 @@ let sentences=[]
 let synth = window.speechSynthesis
 let voices=[]
 let speakingAll=false
+let speakingLock=false   // ← TAMBAH INI
 
 /* ===== PHRASE SYSTEM ===== */
 let PHRASES = JSON.parse(localStorage.getItem("phrases")||"[]")
@@ -327,13 +328,12 @@ document.addEventListener("click", e=>{
   const ph = e.target.closest(".phrase")
   if(!ph) return
 
+  e.stopImmediatePropagation() // ⭐ ini kunci utama
   e.stopPropagation()
-  e.preventDefault()   // ⭐ cegah event lain
+  e.preventDefault()
 
   const p = PHRASES[ph.dataset.i]
   if(p) alert(p.text + " = " + p.meaning)
-
-  return              // ⭐ hentikan total
 })
 
 updatePhraseCount()
@@ -426,12 +426,19 @@ tr.innerText=hasil
 
 /* ===== SPEECH ===== */
 function speakSentence(i){
-synth.cancel()
-const u=new SpeechSynthesisUtterance(sentences[i])
-u.lang="en-US"
-const v=getVoice()
-if(v)u.voice=v
-synth.speak(u)
+  if(speakingLock) return   // ← TAMBAH
+
+  synth.cancel()
+
+  const u=new SpeechSynthesisUtterance(sentences[i])
+  u.lang="en-US"
+  const v=getVoice()
+  if(v)u.voice=v
+
+  speakingLock=true        // ← TAMBAH
+  u.onend=()=>{speakingLock=false}   // ← TAMBAH
+
+  synth.speak(u)
 }
 
 function playAll(){
