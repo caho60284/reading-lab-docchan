@@ -449,20 +449,22 @@ tr.innerText=hasil
 /* ===== SPEECH ===== */
 function speakSentence(i){
 
-  const rows = document.querySelectorAll(".sentence")
-  rows.forEach(r=>r.classList.remove("active"))
+  const all = document.querySelectorAll(".sentence")
+  all.forEach(el=>el.classList.remove("active"))
 
-  const current = rows[i]
-  if(current) current.classList.add("active")
+  const active = all[i]
+  if(active) active.classList.add("active")
+
+  synth.cancel()
 
   const u = new SpeechSynthesisUtterance(sentences[i])
   u.lang="en-US"
 
   const v = getVoice()
-  if(v) u.voice = v
+  if(v) u.voice=v
 
-  u.onend = ()=>{
-    if(current) current.classList.remove("active")
+  u.onend=()=>{
+    if(active) active.classList.remove("active")
   }
 
   synth.speak(u)
