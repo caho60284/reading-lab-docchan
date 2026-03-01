@@ -51,12 +51,6 @@ display:flex;
 align-items:center;
 justify-content:center;
 gap:8px;
-transition:transform .08s, box-shadow .08s;
-}
-
-.btn:active{
-transform:scale(.97);
-box-shadow:0 2px 6px rgba(0,0,0,.15) inset;
 }
 
 .btnRead{background:#26a69a}
@@ -73,10 +67,9 @@ justify-content:center;
 padding:18px
 }
 
-/* ✅ MOBILE SAFE BOX */
 .box{
 background:#fff;
-width:calc(100vw - 28px);   /* full HP */
+width:calc(100vw - 28px);
 max-width:560px;
 border-radius:18px;
 padding:20px 18px 18px;
@@ -95,57 +88,10 @@ color:#999;
 cursor:pointer
 }
 
-.sentence{
-margin-bottom:12px;
-line-height:1.6;
-cursor:pointer;
-padding:6px 6px;
-border-radius:8px;
-transition:background .15s;
-}
-
-.sentence.active{background:#e0f2f1}
-.sentence.playing{background:#c8ede9}
-
-.translation{
-color:#26a69a;
-margin-top:6px;
-margin-bottom:10px;
-display:none;
-line-height:1.55
-}
-
-#ocrLoad{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.35);
-display:none;
-align-items:center;
-justify-content:center;
-z-index:50;
-color:#fff;
-font-size:18px;
-flex-direction:column;
-gap:10px
-}
-
-.spinner{
-width:36px;
-height:36px;
-border:4px solid rgba(255,255,255,.3);
-border-top:4px solid #fff;
-border-radius:50%;
-animation:spin 1s linear infinite
-}
-
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* ===== TOOLBAR ===== */
 .readerToolbar{
 display:flex;
 gap:12px;
 margin-bottom:14px;
-flex-wrap:nowrap;  /* stabil */
 }
 
 .toolBtn{
@@ -188,6 +134,86 @@ opacity:0;
 cursor:pointer;
 }
 
+.sentence{
+margin-bottom:12px;
+line-height:1.6;
+cursor:pointer;
+padding:6px;
+border-radius:8px;
+}
+
+.sentence.active{background:#e0f2f1}
+.sentence.playing{background:#c8ede9}
+
+.translation{
+color:#26a69a;
+margin-top:6px;
+margin-bottom:10px;
+display:none;
+line-height:1.55
+}
+
+.phrase{
+text-decoration:underline;
+color:#e53935;
+font-weight:600;
+cursor:pointer;
+}
+
+#ocrLoad{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.35);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:50;
+color:#fff;
+font-size:18px;
+flex-direction:column;
+gap:10px
+}
+
+.spinner{
+width:36px;
+height:36px;
+border:4px solid rgba(255,255,255,.3);
+border-top:4px solid #fff;
+border-radius:50%;
+animation:spin 1s linear infinite
+}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ===== PHRASE PANEL ===== */
+#phrasePanel{
+position:fixed;
+bottom:14px;
+right:14px;
+background:#fff;
+border-radius:12px;
+padding:8px 10px;
+box-shadow:0 2px 8px rgba(0,0,0,.15);
+font-size:13px;
+z-index:20;
+display:flex;
+align-items:center;
+gap:6px;
+}
+
+#phrasePanel button{
+border:none;
+background:#ff5a5a;
+color:#fff;
+border-radius:8px;
+padding:4px 6px;
+font-size:12px;
+cursor:pointer;
+}
+
+#phrasePanel label{
+cursor:pointer;
+}
 </style>
 </head>
 
@@ -234,32 +260,85 @@ cursor:pointer;
 </div>
 </div>
 
+<!-- PHRASE PANEL -->
+<div id="phrasePanel">
+<span id="phraseCount">0 phrases</span>
+<button onclick="deleteAllPhrases()">🗑</button>
+<label>📥
+<input type="file" accept=".csv" style="display:none" onchange="importPhraseCSV(this.files[0])">
+</label>
+</div>
+
 <script>
 let sentences=[]
 let synth = window.speechSynthesis
-let speakingAll = false
-let currentIndex = -1
 let voices=[]
+let speakingAll=false
 
-// ===== PHRASE DATABASE =====
-let PHRASES = JSON.parse(localStorage.getItem("phrases") || "[]")
+/* ===== PHRASE SYSTEM ===== */
+let PHRASES = JSON.parse(localStorage.getItem("phrases")||"[]")
 
 function savePhrases(){
-  localStorage.setItem("phrases", JSON.stringify(PHRASES))
+localStorage.setItem("phrases",JSON.stringify(PHRASES))
+updatePhraseCount()
 }
 
+function updatePhraseCount(){
+document.getElementById("phraseCount").innerText=PHRASES.length+" phrases"
+}
+
+function addPhrase(text,meaning){
+text=text.trim().toLowerCase()
+if(!text)return
+if(PHRASES.some(p=>p.text===text))return
+PHRASES.push({text,meaning})
+savePhrases()
+}
+
+function deleteAllPhrases(){
+if(!confirm("Delete all phrases?"))return
+PHRASES=[]
+savePhrases()
+}
+
+function importPhraseCSV(file){
+const reader=new FileReader()
+reader.onload=e=>{
+const lines=e.target.result.split(/\r?\n/)
+lines.forEach(l=>{
+const [t,m]=l.split(",")
+if(t&&m)addPhrase(t,m)
+})
+}
+reader.readAsText(file)
+}
+
+function detectPhrases(text){
+let out=text
+PHRASES.forEach((p,i)=>{
+const esc=p.text.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")
+const re=new RegExp(`\\b${esc}\\b`,"gi")
+out=out.replace(re,`<span class="phrase" data-i="${i}">$&</span>`)
+})
+return out
+}
+
+document.addEventListener("click",e=>{
+const ph=e.target.closest(".phrase")
+if(!ph)return
+e.stopPropagation()
+const p=PHRASES[ph.dataset.i]
+if(p)alert(p.text+" = "+p.meaning)
+})
+
+updatePhraseCount()
+
+/* ===== VOICE ===== */
 function loadVoices(){
-voices = synth.getVoices()
+voices=synth.getVoices()
 const sel=document.getElementById("voiceSelect")
-if(!sel) return
-
-if(!voices.length){
-setTimeout(loadVoices,200)
-return
-}
-
+if(!voices.length){setTimeout(loadVoices,200);return}
 sel.innerHTML='<option value="">Default Voice</option>'
-
 voices.forEach((v,i)=>{
 const o=document.createElement("option")
 o.value=i
@@ -267,16 +346,26 @@ o.textContent=v.name+" ("+v.lang+")"
 sel.appendChild(o)
 })
 }
-
 speechSynthesis.onvoiceschanged=loadVoices
 loadVoices()
 
-function getSelectedVoice(){
+function getVoice(){
 const sel=document.getElementById("voiceSelect")
-if(!sel||sel.value==="") return null
+if(!sel||sel.value==="")return null
 return voices[sel.value]
 }
 
+/* ===== OCR ===== */
+document.getElementById("imgInput").addEventListener("change",async e=>{
+const file=e.target.files[0]
+if(!file)return
+document.getElementById("ocrLoad").style.display="flex"
+const {data:{text}}=await Tesseract.recognize(file,"eng")
+document.getElementById("ocrLoad").style.display="none"
+document.getElementById("inputText").value=text.trim()
+})
+
+/* ===== READER ===== */
 function openReader(){
 const text=document.getElementById("inputText").value.trim()
 if(!text)return
@@ -291,160 +380,75 @@ stopSpeak()
 }
 
 function splitSentences(text){
-sentences = text
-.replace(/\n/g," ")
-.match(/[^\.!\?]+[\.!\?]+/g) || [text]
-}
-
-function detectPhrases(text){
-let out = text
-PHRASES.forEach((p,i)=>{
-const escaped = p.text.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")
-const re=new RegExp(`\\b${escaped}\\b`,"gi")
-out = out.replace(re,
-`<span class="phrase" data-i="${i}" style="text-decoration:underline;color:#e53935;font-weight:600;cursor:pointer">$&</span>`
-)
-})
-return out
+sentences=text.replace(/\n/g," ").match(/[^\.!\?]+[\.!\?]+/g)||[text]
 }
 
 function renderSentences(){
 const box=document.getElementById("reader")
 box.innerHTML=""
-
 sentences.forEach((s,i)=>{
-const wrap=document.createElement("div")
-wrap.className="sentence"
-wrap.innerHTML = detectPhrases(s.trim())
-
-wrap.addEventListener("click", ()=>{
+const div=document.createElement("div")
+div.className="sentence"
+div.innerHTML=detectPhrases(s.trim())
+div.onclick=()=>{
 selectSentence(i)
 speakSentence(i)
-})
-
-const trans=document.createElement("div")
-trans.className="translation"
-trans.id="tr"+i
-
-wrap.appendChild(trans)
-box.appendChild(wrap)
+}
+const tr=document.createElement("div")
+tr.className="translation"
+tr.id="tr"+i
+div.appendChild(tr)
+box.appendChild(div)
 })
 }
 
 function selectSentence(i){
 document.querySelectorAll(".sentence").forEach(s=>s.classList.remove("active"))
 document.querySelectorAll(".translation").forEach(t=>t.style.display="none")
-
 const sent=document.querySelectorAll(".sentence")[i]
-const trans=document.getElementById("tr"+i)
-
+const tr=document.getElementById("tr"+i)
 sent.classList.add("active")
-trans.style.display="block"
-trans.innerText="Translating..."
-
+tr.style.display="block"
+tr.innerText="Translating..."
 fetch("https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=id&dt=t&q="+encodeURIComponent(sentences[i]))
 .then(r=>r.json())
-.then(data=>{
+.then(d=>{
 let hasil=""
-data[0].forEach(b=>hasil+=b[0])
-trans.innerText=hasil
+d[0].forEach(b=>hasil+=b[0])
+tr.innerText=hasil
 })
 }
 
-function clearText(){
-const el=document.getElementById("inputText")
-el.value=""
-el.focus()
-}
-
+/* ===== SPEECH ===== */
 function speakSentence(i){
 synth.cancel()
-currentIndex=i
-highlightPlaying(i)
-
-const utter=new SpeechSynthesisUtterance(sentences[i])
-utter.lang="en-US"
-utter.rate=0.9
-
-const v=getSelectedVoice()
-if(v) utter.voice=v
-
-utter.onend=()=>removePlaying()
-
-synth.speak(utter)
-}
-
-function highlightPlaying(i){
-removePlaying()
-document.querySelectorAll(".sentence")[i].classList.add("playing")
-}
-
-function removePlaying(){
-document.querySelectorAll(".sentence").forEach(s=>s.classList.remove("playing"))
-}
-
-function stopSpeak(){
-speakingAll=false
-synth.cancel()
-removePlaying()
+const u=new SpeechSynthesisUtterance(sentences[i])
+u.lang="en-US"
+const v=getVoice()
+if(v)u.voice=v
+synth.speak(u)
 }
 
 function playAll(){
 if(!sentences.length)return
-speakingAll=true
-synth.cancel()
 let i=0
-
 function next(){
-if(!speakingAll||i>=sentences.length){removePlaying();return}
-
-highlightPlaying(i)
-
-const utter=new SpeechSynthesisUtterance(sentences[i])
-utter.lang="en-US"
-utter.rate=0.9
-
-const v=getSelectedVoice()
-if(v) utter.voice=v
-
-utter.onend=()=>{
-i++
+if(i>=sentences.length)return
+const u=new SpeechSynthesisUtterance(sentences[i])
+u.lang="en-US"
+const v=getVoice()
+if(v)u.voice=v
+u.onend=()=>{i++;next()}
+synth.speak(u)
+}
 next()
 }
 
-synth.speak(utter)
+function stopSpeak(){synth.cancel()}
+
+function clearText(){
+document.getElementById("inputText").value=""
 }
-
-next()
-}
-
-document.getElementById("imgInput").addEventListener("change", handleImage)
-
-async function handleImage(e){
-const file=e.target.files[0]
-if(!file)return
-
-showOCR(true)
-
-const { data:{ text } } = await Tesseract.recognize(file,"eng")
-
-showOCR(false)
-
-if(!text.trim())return
-document.getElementById("inputText").value=text.trim()
-}
-
-function showOCR(v){
-document.getElementById("ocrLoad").style.display=v?"flex":"none"
-}
-
-document.getElementById("reader").addEventListener("click",(e)=>{
-const ph = e.target.closest(".phrase")
-if(!ph) return
-e.stopPropagation()
-const p = PHRASES[ph.dataset.i]
-if(p) alert(p.text + " = " + p.meaning)
-})
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
