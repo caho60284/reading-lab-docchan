@@ -470,19 +470,33 @@ function speakSentence(i){
   synth.speak(u)
 }
 
-function playAll(){
-if(!sentences.length)return
-let i=0
-function next(){
-if(i>=sentences.length)return
-const u=new SpeechSynthesisUtterance(sentences[i])
-u.lang="en-US"
-const v=getVoice()
-if(v)u.voice=v
-u.onend=()=>{i++;next()}
-synth.speak(u)
-}
-next()
+async function playAll(){
+
+  speakingAll = true
+
+  const rows = document.querySelectorAll(".sentence")
+
+  for(let i=0;i<sentences.length;i++){
+
+    if(!speakingAll) break
+
+    rows.forEach(r=>r.classList.remove("active"))
+    const current = rows[i]
+    if(current) current.classList.add("active")
+
+    await new Promise(res=>{
+      const u = new SpeechSynthesisUtterance(sentences[i])
+      u.lang="en-US"
+      const v=getVoice()
+      if(v) u.voice=v
+      u.onend=res
+      synth.speak(u)
+    })
+
+  }
+
+  rows.forEach(r=>r.classList.remove("active"))
+  speakingAll=false
 }
 
 function stopSpeak(){synth.cancel()}
