@@ -343,9 +343,11 @@ document.addEventListener("click", e=>{
   const ph = e.target.closest(".phrase")
   if(!ph) return
 
-  e.stopImmediatePropagation() // ⭐ ini kunci utama
   e.stopPropagation()
   e.preventDefault()
+
+  // 🔴 STOP supaya TIDAK memicu sentence click
+  e.stopImmediatePropagation()
 
   const p = PHRASES[ph.dataset.i]
   if(p) alert(p.text + " = " + p.meaning)
