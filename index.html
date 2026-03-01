@@ -260,6 +260,28 @@ let speakingAll = false
 let currentIndex = -1
 let voices=[]
 
+// ===== PHRASE DATABASE =====
+let PHRASES = JSON.parse(localStorage.getItem("phrases") || "[]")
+
+function savePhrases(){
+  localStorage.setItem("phrases", JSON.stringify(PHRASES))
+}
+
+function addPhrase(text, meaning){
+  PHRASES.push({text, meaning})
+  savePhrases()
+}
+
+function deletePhrase(index){
+  PHRASES.splice(index,1)
+  savePhrases()
+}
+
+function updatePhrase(index, text, meaning){
+  PHRASES[index] = {text, meaning}
+  savePhrases()
+}
+
 function loadVoices(){
 voices = synth.getVoices()
 const sel=document.getElementById("voiceSelect")
@@ -319,6 +341,21 @@ function readText(){
   renderSentences()
 }
 
+function detectPhrases(text){
+  let out = text
+
+  PHRASES.forEach((p,i)=>{
+    const escaped = p.text.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")
+    const re = new RegExp(`\\b${escaped}\\b`,"gi")
+
+    out = out.replace(re,
+      `<span class="phrase" data-i="${i}" style="text-decoration:underline;color:#e53935;font-weight:600;cursor:pointer">$&</span>`
+    )
+  })
+
+  return out
+}
+
 function renderSentences(){
 const box=document.getElementById("reader")
 box.innerHTML=""
@@ -326,7 +363,7 @@ box.innerHTML=""
 sentences.forEach((s,i)=>{
 const wrap=document.createElement("div")
 wrap.className="sentence"
-wrap.innerHTML = s.trim()
+wrap.innerHTML = detectPhrases(s.trim())
 
 wrap.addEventListener("click", ()=>{
   selectSentence(i)
@@ -447,6 +484,27 @@ document.getElementById("inputText").value=text.trim()
 
 function showOCR(v){
 document.getElementById("ocrLoad").style.display=v?"flex":"none"
+}
+
+document.getElementById("reader").addEventListener("click",(e)=>{
+  const ph = e.target.closest(".phrase")
+  if(!ph) return
+
+  e.stopPropagation()
+  const i = ph.dataset.i
+  const p = PHRASES[i]
+  if(p) alert(p.text + " = " + p.meaning)
+})
+
+function importPhrases(text){
+  const lines = text.split("\n")
+  lines.forEach(line=>{
+    const [phrase,meaning] = line.split("\t")
+    if(phrase && meaning){
+      PHRASES.push({text:phrase.trim(), meaning:meaning.trim()})
+    }
+  })
+  savePhrases()
 }
 
 </script>
