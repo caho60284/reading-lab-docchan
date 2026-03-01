@@ -339,19 +339,21 @@ out=out.replace(re,`<span class="phrase" data-i="${i}">$&</span>`)
 return out
 }
 
-document.addEventListener("click", e=>{
+document.addEventListener("click", function(e){
+
   const ph = e.target.closest(".phrase")
   if(!ph) return
 
+  e.stopImmediatePropagation()
   e.stopPropagation()
   e.preventDefault()
 
-  // 🔴 STOP supaya TIDAK memicu sentence click
-  e.stopImmediatePropagation()
-
   const p = PHRASES[ph.dataset.i]
-  if(p) alert(p.text + " = " + p.meaning)
-})
+  if(p){
+    alert(p.text + " = " + p.meaning)
+  }
+
+}, true)
 
 updatePhraseCount()
 
