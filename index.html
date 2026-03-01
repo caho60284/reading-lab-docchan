@@ -323,12 +323,17 @@ out=out.replace(re,`<span class="phrase" data-i="${i}">$&</span>`)
 return out
 }
 
-document.addEventListener("click",e=>{
-const ph=e.target.closest(".phrase")
-if(!ph)return
-e.stopPropagation()
-const p=PHRASES[ph.dataset.i]
-if(p)alert(p.text+" = "+p.meaning)
+document.addEventListener("click", e=>{
+  const ph = e.target.closest(".phrase")
+  if(!ph) return
+
+  e.stopPropagation()
+  e.preventDefault()   // ⭐ cegah event lain
+
+  const p = PHRASES[ph.dataset.i]
+  if(p) alert(p.text + " = " + p.meaning)
+
+  return              // ⭐ hentikan total
 })
 
 updatePhraseCount()
