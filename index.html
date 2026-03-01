@@ -7,239 +7,248 @@
 
 <style>
 body{
+  font-family:system-ui;
   margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto;
-  background:#f4f6f8;
+  background:#f2f4f7;
 }
 
-/* ===== HEADER ===== */
+/* HEADER */
 .header{
   padding:16px;
-  background:#fff;
-  border-bottom:1px solid #e5e5e5;
-}
-.title{
-  font-size:22px;
+  font-size:26px;
   font-weight:700;
 }
-.subtitle{
-  font-size:12px;
-  color:#888;
-}
 
-/* ===== TEXT AREA ===== */
+/* TEXT AREA */
 #textInput{
   width:92%;
-  margin:16px auto;
-  height:180px;
-  border-radius:14px;
-  border:1px solid #ddd;
-  padding:12px;
-  font-size:16px;
+  margin:12px auto;
   display:block;
+  height:160px;
+  border-radius:18px;
+  border:1px solid #ddd;
+  padding:14px;
+  font-size:18px;
   box-sizing:border-box;
 }
 
-/* ===== BUTTON BAR ===== */
-.toolBar{
+/* MAIN BUTTONS */
+.mainBtns{
   display:flex;
   gap:12px;
-  justify-content:center;
-  margin:14px 0;
+  padding:12px;
 }
-.toolBtn{
+.mainBtns button{
   flex:1;
-  max-width:140px;
   height:56px;
-  border-radius:16px;
   border:none;
+  border-radius:18px;
+  font-size:18px;
   color:#fff;
-  font-weight:600;
-  font-size:16px;
 }
-.clearBtn{background:#5b6df9;}
-.readBtn{background:#23a27b;}
-.csvBtn{background:#2f7bdc;}
-.photoBtn{background:#d48b2f;}
+.btnClear{background:#5c6bc0}
+.btnRead{background:#43a047}
+.btnCSV{background:#1e88e5}
+.btnPhoto{background:#c48a3a}
 
-/* ===== READER POPUP ===== */
+/* PHRASE COUNT */
+#phraseCount{
+  position:absolute;
+  right:14px;
+  top:14px;
+  font-size:13px;
+  background:#000;
+  color:#fff;
+  padding:3px 8px;
+  border-radius:12px;
+  opacity:.7;
+}
+
+/* DELETE ALL PHRASE */
+#deleteAllPhrase{
+  margin:8px 12px;
+  background:#d32f2f;
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  padding:10px 12px;
+}
+
+/* READER POPUP */
 .readerOverlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.3);
+  background:rgba(0,0,0,.25);
   display:none;
   align-items:center;
   justify-content:center;
-  z-index:99;
 }
 
 .readerBox{
   width:92%;
   max-width:520px;
   background:#fff;
-  border-radius:18px;
+  border-radius:20px;
   padding:16px;
   box-sizing:border-box;
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
 }
 
-/* ===== READER TOOLBAR ===== */
+/* CLOSE X */
+.closeX{
+  position:absolute;
+  right:12px;
+  top:8px;
+  font-size:22px;
+  cursor:pointer;
+}
+
+/* TOOLBAR */
 .readerToolbar{
   display:flex;
-  gap:10px;
-  margin-bottom:10px;
+  gap:12px;
 }
-.rbtn{
+.toolBtn{
   flex:1;
-  height:52px;
+  height:56px;
   border:none;
-  border-radius:14px;
-  color:#fff;
-  font-weight:600;
-  font-size:16px;
-}
-.play{background:#59b36a;}
-.stop{background:#d34a3f;}
-.voice{
-  background:#8c3bb8;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  position:relative;
-}
-.voice select{
-  border:none;
-  border-radius:8px;
-  padding:2px 6px;
-  font-size:14px;
-}
-
-/* ===== PHRASE COUNT ===== */
-.lexiconCount{
-  position:absolute;
-  top:-10px;
-  right:-8px;
-  font-size:11px;
-  color:#fff;
-  background:#0008;
-  padding:2px 6px;
-  border-radius:6px;
-}
-
-/* ===== READER TEXT ===== */
-#readerText{
+  border-radius:18px;
   font-size:18px;
-  line-height:1.5;
-  margin-bottom:10px;
-  word-wrap:break-word;
+  color:#fff;
+}
+.playBtn{background:#66bb6a}
+.stopBtn{background:#e74c3c}
+.voiceBtn{background:#8e44ad}
+
+/* SENTENCE AREA */
+#reader{
+  margin-top:14px;
+  font-size:20px;
+  line-height:1.6;
 }
 
-/* ===== PHRASE SAVE BAR ===== */
-.phraseBar{
+/* PHRASE INPUT */
+.phraseRow{
   display:flex;
   gap:8px;
+  margin-top:12px;
 }
-.phraseBar input{
+.phraseRow input{
   flex:1;
-  height:40px;
-  border-radius:10px;
-  border:1px solid #ddd;
-  padding:6px;
+  height:42px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  padding:8px;
   font-size:16px;
 }
-.savePhrase{
-  background:#59b36a;
-  border:none;
-  border-radius:10px;
+.savePhraseBtn{
+  background:#43a047;
   color:#fff;
-  padding:0 14px;
-  font-weight:600;
+  border:none;
+  border-radius:12px;
+  padding:0 12px;
 }
 
-/* ===== HIGHLIGHT ===== */
+/* UNDERLINE PHRASE */
 .phrase{
+  color:#c0392b;
   text-decoration:underline;
-  color:#d33;
   font-weight:600;
-  cursor:pointer;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">
-  <div class="title">📘 Reading Lab</div>
-  <div class="subtitle">LAB VERSION</div>
-</div>
+<div class="header">📘 Reading Lab</div>
 
 <textarea id="textInput" placeholder="Paste text here..."></textarea>
 
-<div class="toolBar">
-  <button class="toolBtn clearBtn" onclick="clearText()">Clear</button>
-  <button class="toolBtn readBtn" onclick="openReader()">Read</button>
-  <button class="toolBtn csvBtn" onclick="importCSV()">CSV</button>
-  <button class="toolBtn photoBtn" onclick="openPhoto()">Photo</button>
+<div class="mainBtns">
+  <button class="btnClear" onclick="clearText()">Clear</button>
+  <button class="btnRead" onclick="openReader()">Read</button>
+  <button class="btnCSV" onclick="importCSV()">CSV</button>
+  <button class="btnPhoto" onclick="openPhoto()">📷</button>
 </div>
 
-<input type="file" id="photoInput" accept="image/*" style="display:none">
+<button id="deleteAllPhrase" onclick="deleteAllPhrase()">🗑 Delete All Phrases</button>
 
-<!-- ===== READER ===== -->
+<div id="phraseCount">0 phrases</div>
+
+<!-- READER -->
 <div class="readerOverlay" id="readerOverlay">
   <div class="readerBox">
+    <div class="closeX" onclick="closeReader()">✕</div>
 
     <div class="readerToolbar">
-      <button class="rbtn play" onclick="speakText()">Play</button>
-      <button class="rbtn stop" onclick="stopSpeak()">Stop</button>
-
-      <div class="rbtn voice">
-        🎙 Voice
+      <button class="toolBtn playBtn" onclick="speak()">Play</button>
+      <button class="toolBtn stopBtn" onclick="stopSpeak()">Stop</button>
+      <button class="toolBtn voiceBtn">
+        Voice
         <select id="voiceSelect"></select>
-        <div class="lexiconCount" id="lexiconCount">0</div>
-      </div>
+      </button>
     </div>
 
-    <div id="readerText"></div>
+    <div id="reader"></div>
 
-    <div class="phraseBar">
+    <div class="phraseRow">
       <input id="phraseText" placeholder="phrase">
       <input id="phraseMeaning" placeholder="meaning">
-      <button class="savePhrase" onclick="savePhrase()">Save</button>
+      <button class="savePhraseBtn" onclick="savePhrase()">Save</button>
     </div>
 
   </div>
 </div>
 
+<input type="file" id="photoInput" accept="image/*" style="display:none">
+
 <script>
-/* ===== STORAGE ===== */
-let PHRASES = JSON.parse(localStorage.getItem("phrases")||"[]")
 
-function updateLexicon(){
-  document.getElementById("lexiconCount").innerText=PHRASES.length
-}
-updateLexicon()
-
-/* ===== CLEAR ===== */
+/* ================= TEXT ================= */
 function clearText(){
-  document.getElementById("textInput").value=""
+  textInput.value=""
 }
 
-/* ===== READER OPEN ===== */
 function openReader(){
-  const text=document.getElementById("textInput").value
-  document.getElementById("readerText").innerHTML=detectPhrases(text)
-  document.getElementById("readerOverlay").style.display="flex"
+  const txt=textInput.value
+  renderReader(txt)
+  readerOverlay.style.display="flex"
 }
 
-/* ===== PHRASE DETECT ===== */
-function detectPhrases(text){
-  let out=text
+function closeReader(){
+  readerOverlay.style.display="none"
+}
+
+/* ================= PHRASES ================= */
+let PHRASES=JSON.parse(localStorage.getItem("phrases")||"[]")
+
+function updatePhraseCount(){
+  phraseCount.innerText=PHRASES.length+" phrases"
+}
+updatePhraseCount()
+
+function savePhrase(){
+  const t=phraseText.value.trim().toLowerCase()
+  const m=phraseMeaning.value.trim()
+  if(!t||!m) return
+  PHRASES.push({text:t,meaning:m})
+  localStorage.setItem("phrases",JSON.stringify(PHRASES))
+  phraseText.value=""
+  phraseMeaning.value=""
+  updatePhraseCount()
+}
+
+function deleteAllPhrase(){
+  if(!confirm("Delete all phrases?")) return
+  PHRASES=[]
+  localStorage.setItem("phrases","[]")
+  updatePhraseCount()
+}
+
+/* DETECT PHRASE */
+function detectPhrase(txt){
+  let out=txt
   PHRASES.forEach((p,i)=>{
-    const esc=p.text.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")
-    const re=new RegExp("\\b"+esc+"\\b","gi")
+    const re=new RegExp("\\b"+p.text+"\\b","gi")
     out=out.replace(re,
       `<span class="phrase" data-i="${i}">$&</span>`
     )
@@ -247,89 +256,87 @@ function detectPhrases(text){
   return out
 }
 
-/* ===== PHRASE CLICK ===== */
-document.getElementById("readerText").addEventListener("click",(e)=>{
-  const ph=e.target.closest(".phrase")
-  if(!ph)return
-  const i=ph.dataset.i
-  const p=PHRASES[i]
-  if(p)alert(p.text+" = "+p.meaning)
+function renderReader(txt){
+  reader.innerHTML=detectPhrase(txt)
+}
+
+/* CLICK PHRASE */
+reader.addEventListener("click",e=>{
+  const el=e.target.closest(".phrase")
+  if(!el) return
+  const p=PHRASES[el.dataset.i]
+  if(p) alert(p.text+" = "+p.meaning)
 })
 
-/* ===== SAVE PHRASE ===== */
-function savePhrase(){
-  const t=document.getElementById("phraseText").value.trim()
-  const m=document.getElementById("phraseMeaning").value.trim()
-  if(!t||!m)return
-  PHRASES.push({text:t,meaning:m})
-  localStorage.setItem("phrases",JSON.stringify(PHRASES))
-  updateLexicon()
-  document.getElementById("phraseText").value=""
-  document.getElementById("phraseMeaning").value=""
-}
-
-/* ===== CSV IMPORT ===== */
-function importCSV(){
-  const inp=document.createElement("input")
-  inp.type="file"
-  inp.accept=".csv"
-  inp.onchange=e=>{
-    const file=e.target.files[0]
-    const r=new FileReader()
-    r.onload=ev=>{
-      const rows=ev.target.result.split(/\r?\n/)
-      rows.forEach(row=>{
-        const [t,m]=row.split(",")
-        if(t&&m)PHRASES.push({text:t.trim(),meaning:m.trim()})
-      })
-      localStorage.setItem("phrases",JSON.stringify(PHRASES))
-      updateLexicon()
-      alert("Imported")
-    }
-    r.readAsText(file)
-  }
-  inp.click()
-}
-
-/* ===== OCR PHOTO ===== */
-function openPhoto(){
-  document.getElementById("photoInput").click()
-}
-
-document.getElementById("photoInput").addEventListener("change",()=>{
-  alert("OCR active di versi kamu sebelumnya ✔")
-})
-
-/* ===== SPEECH ===== */
+/* ================= SPEECH ================= */
 let synth=window.speechSynthesis
 let voices=[]
 
 function loadVoices(){
   voices=synth.getVoices()
-  const sel=document.getElementById("voiceSelect")
-  sel.innerHTML=""
+  voiceSelect.innerHTML=""
   voices.forEach((v,i)=>{
-    const o=document.createElement("option")
-    o.value=i
-    o.text=v.name
-    sel.appendChild(o)
+    const opt=document.createElement("option")
+    opt.value=i
+    opt.text=v.name
+    voiceSelect.appendChild(opt)
   })
 }
 speechSynthesis.onvoiceschanged=loadVoices
-loadVoices()
 
-function speakText(){
-  const text=document.getElementById("readerText").innerText
-  const u=new SpeechSynthesisUtterance(text)
-  const idx=document.getElementById("voiceSelect").value
-  if(voices[idx])u.voice=voices[idx]
+function speak(){
+  const txt=reader.innerText
+  const u=new SpeechSynthesisUtterance(txt)
+  const v=voices[voiceSelect.value]
+  if(v) u.voice=v
   synth.speak(u)
 }
 
 function stopSpeak(){
   synth.cancel()
 }
-</script>
 
+/* ================= CSV ================= */
+function importCSV(){
+  const input=document.createElement("input")
+  input.type="file"
+  input.accept=".csv"
+  input.onchange=e=>{
+    const file=e.target.files[0]
+    const r=new FileReader()
+    r.onload=ev=>{
+      const rows=ev.target.result.split("\n")
+      rows.forEach(row=>{
+        const [t,m]=row.split(",")
+        if(t&&m){
+          PHRASES.push({text:t.trim().toLowerCase(),meaning:m.trim()})
+        }
+      })
+      localStorage.setItem("phrases",JSON.stringify(PHRASES))
+      updatePhraseCount()
+      alert("Imported ✔")
+    }
+    r.readAsText(file)
+  }
+  input.click()
+}
+
+/* ================= PHOTO OCR ================= */
+function openPhoto(){
+  photoInput.click()
+}
+
+photoInput.addEventListener("change",e=>{
+  const file=e.target.files[0]
+  if(!file) return
+  const readerFile=new FileReader()
+  readerFile.onload=ev=>{
+    textInput.value=""
+    textInput.value="[Image loaded ✔]"
+  }
+  readerFile.readAsDataURL(file)
+})
+
+</script>
 </body>
 </html>
