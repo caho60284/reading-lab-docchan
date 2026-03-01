@@ -2,30 +2,143 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Reading Lab</title>
 
 <style>
-/* ====== CSS KAMU ASLI TIDAK DIUBAH ====== */
-body{margin:0;font-family:sans-serif;background:#f5f6fa}
+*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+body{margin:0;background:#f3f5f9;color:#222}
 
-.readerModal{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.4);
+header{
+position:sticky;top:0;
+background:#fff;
+padding:16px 14px 10px;
+box-shadow:0 2px 6px rgba(0,0,0,.08);
+z-index:10
+}
+
+h1{margin:0;font-size:22px}
+.lab{font-size:12px;color:#888;margin-top:2px}
+
+.main{padding:14px}
+
+textarea{
+width:100%;
+min-height:200px;
+border-radius:14px;
+border:1px solid #ddd;
+padding:14px;
+font-size:16px;
+line-height:1.5;
+resize:vertical;
+background:#fff
+}
+
+.btnRow{
+display:flex;
+gap:12px;
+margin-top:12px;
+}
+
+.btn{
+flex:1;
+height:54px;
+border:none;
+border-radius:14px;
+font-size:17px;
+color:#fff;
 display:flex;
 align-items:center;
 justify-content:center;
-z-index:999;
+gap:8px;
 }
 
-.readerContent{
+.btnRead{background:#26a69a}
+.btnClear{background:linear-gradient(135deg,#7b61ff,#5a8dee)}
+.btnImport{background:#2f86d6}
+
+.modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.35);
+display:none;
+align-items:center;
+justify-content:center;
+padding:18px
+}
+
+.box{
 background:#fff;
-width:92%;
-max-width:520px;
+width:100%;
+max-width:560px;
 border-radius:18px;
-padding:18px;
-box-sizing:border-box;
+padding:20px 18px 18px;
+position:relative;
+max-height:85vh;
+overflow:auto;
+box-shadow:0 10px 30px rgba(0,0,0,.15)
+}
+
+.closeX{
+position:absolute;
+top:10px;
+right:12px;
+font-size:20px;
+color:#999;
+cursor:pointer
+}
+
+.sentence{
+margin-bottom:12px;
+line-height:1.6;
+cursor:pointer;
+padding:6px 6px;
+border-radius:8px;
+}
+
+.sentence.active{background:#e0f2f1}
+.sentence.playing{background:#c8ede9}
+
+.translation{
+color:#26a69a;
+margin-top:6px;
+margin-bottom:10px;
+display:none;
+line-height:1.55
+}
+
+/* ===== phrase highlight ===== */
+.phrase{
+text-decoration:underline;
+color:#e53935;
+font-weight:600;
+cursor:pointer;
+}
+
+/* ===== phrase panel ===== */
+.phrasePanel{
+margin-top:14px;
+display:flex;
+gap:8px;
+}
+
+.phrasePanel input{
+flex:1;
+height:42px;
+border-radius:10px;
+border:1px solid #ddd;
+padding:0 10px;
+font-size:14px;
+}
+
+.phrasePanel button{
+height:42px;
+border:none;
+border-radius:10px;
+padding:0 12px;
+background:#4caf50;
+color:#fff;
+font-weight:600;
 }
 
 .readerToolbar{
@@ -35,55 +148,30 @@ margin-bottom:14px;
 }
 
 .toolBtn{
+height:56px;
 border:none;
-border-radius:12px;
-padding:10px 14px;
-font-weight:600;
-cursor:pointer;
-}
-
-.playBtn{background:#4caf50;color:#fff}
-.stopBtn{background:#e53935;color:#fff}
-.voiceBtn{background:#9c27b0;color:#fff}
-
-#reader{
-line-height:1.7;
+border-radius:18px;
 font-size:18px;
-}
-
-.sentence{margin-bottom:12px;cursor:pointer}
-
-.translation{
-font-size:15px;
-color:#666;
-margin-top:4px;
-display:none;
-}
-
-.sentence.active{background:#eef3ff;border-radius:8px;padding:6px}
-
-/* ====== PANEL FRASE (BARU) ====== */
-.phrasePanel{
-display:flex;
-gap:6px;
-margin-top:14px;
-}
-
-.phrasePanel input{
-flex:1;
-padding:8px;
-border-radius:8px;
-border:1px solid #ddd;
-font-size:16px;
-}
-
-.phrasePanel button{
-padding:8px 10px;
-border:none;
-border-radius:8px;
-background:#4caf50;
-color:#fff;
 font-weight:600;
+color:#fff;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+padding:0 18px;
+white-space:nowrap;
+}
+
+.playBtn{flex:1.1;background:linear-gradient(135deg,#4caf93,#66bb6a)}
+.stopBtn{flex:1.1;background:linear-gradient(135deg,#7b7be8,#5c6bc0)}
+.voiceBtn{flex:1.6;background:linear-gradient(135deg,#ff5a5a,#d84343);position:relative}
+
+.voiceBtn select{
+position:absolute;
+inset:0;
+width:100%;
+height:100%;
+opacity:0;
 cursor:pointer;
 }
 </style>
@@ -91,22 +179,39 @@ cursor:pointer;
 
 <body>
 
-<div class="readerModal">
-<div class="readerContent">
+<header>
+<h1>📘 Reading Lab</h1>
+<div class="lab">LAB VERSION</div>
+</header>
+
+<div class="main">
+<textarea id="inputText" placeholder="Paste English text..."></textarea>
+
+<div class="btnRow">
+<button class="btn btnClear" onclick="clearText()">🧹 Clear</button>
+<button class="btn btnRead" onclick="openReader()">📖 Read</button>
+<button class="btn btnImport" onclick="importCSV()">📥 Import CSV</button>
+</div>
+</div>
+
+<div class="modal" id="readerModal">
+<div class="box">
 
 <div class="readerToolbar">
 <button class="toolBtn playBtn" onclick="playAll()">🔊 Play</button>
 <button class="toolBtn stopBtn" onclick="stopSpeak()">⏹ Stop</button>
 
 <div class="toolBtn voiceBtn">
-<span>🎙 Voice</span>
+<span>🎙️Voice</span>
 <select id="voiceSelect"></select>
 </div>
 </div>
 
+<div class="closeX" onclick="closeReader()">✕</div>
+
 <div id="reader"></div>
 
-<!-- ===== PANEL FRASE BARU ===== -->
+<!-- ===== PHRASE PANEL ===== -->
 <div class="phrasePanel">
 <input id="phraseText" placeholder="phrase">
 <input id="phraseMeaning" placeholder="meaning">
@@ -117,128 +222,127 @@ cursor:pointer;
 </div>
 
 <script>
-
-/* ====== STATE ASLI ====== */
 let sentences=[]
-let currentIndex=-1
+let synth = window.speechSynthesis
 let voices=[]
 
-/* ====== DATABASE FRASE ====== */
+/* ===== PHRASE DB ===== */
 let PHRASES = JSON.parse(localStorage.getItem("phrases")||"[]")
 
-function savePhrases(){
+function saveDB(){
 localStorage.setItem("phrases",JSON.stringify(PHRASES))
 }
 
 function savePhrase(){
-const t=document.getElementById("phraseText").value.trim().toLowerCase()
+const t=document.getElementById("phraseText").value.trim()
 const m=document.getElementById("phraseMeaning").value.trim()
-if(!t||!m)return
-
+if(!t||!m) return
 PHRASES.push({text:t,meaning:m})
-savePhrases()
-
+saveDB()
 document.getElementById("phraseText").value=""
 document.getElementById("phraseMeaning").value=""
 alert("Saved")
 }
 
-/* ====== DETECT FRASE ====== */
+/* ===== IMPORT CSV ===== */
+function importCSV(){
+const inp=document.createElement("input")
+inp.type="file"
+inp.accept=".csv"
+inp.onchange=e=>{
+const file=e.target.files[0]
+const reader=new FileReader()
+reader.onload=ev=>{
+const lines=ev.target.result.split("\n")
+lines.forEach(l=>{
+const [p,m]=l.split(",")
+if(p&&m) PHRASES.push({text:p.trim(),meaning:m.trim()})
+})
+saveDB()
+alert("Imported")
+}
+reader.readAsText(file)
+}
+inp.click()
+}
+
+/* ===== PHRASE DETECT ===== */
 function detectPhrases(text){
 let out=text
 PHRASES.forEach((p,i)=>{
 const esc=p.text.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")
 const re=new RegExp(`\\b${esc}\\b`,"gi")
-out=out.replace(re,
-`<span class="phrase" data-i="${i}" style="text-decoration:underline;color:#e53935;font-weight:600;cursor:pointer">$&</span>`
-)
+out=out.replace(re,`<span class="phrase" data-i="${i}">$&</span>`)
 })
 return out
 }
 
-/* ====== RENDER ====== */
+/* ===== READER ===== */
+function openReader(){
+const t=document.getElementById("inputText").value.trim()
+if(!t) return
+splitSentences(t)
+renderSentences()
+document.getElementById("readerModal").style.display="flex"
+}
+
+function closeReader(){
+document.getElementById("readerModal").style.display="none"
+stopSpeak()
+}
+
+function splitSentences(t){
+sentences=t.replace(/\n/g," ").match(/[^\.!\?]+[\.!\?]+/g)||[t]
+}
+
 function renderSentences(){
 const box=document.getElementById("reader")
 box.innerHTML=""
 
 sentences.forEach((s,i)=>{
-const wrap=document.createElement("div")
-wrap.className="sentence"
-wrap.innerHTML=detectPhrases(s.trim())
+const d=document.createElement("div")
+d.className="sentence"
+d.innerHTML=detectPhrases(s.trim())
 
-wrap.addEventListener("click",(e)=>{
+d.onclick=()=>speakSentence(i)
+
+box.appendChild(d)
+})
+}
+
+/* ===== CLICK PHRASE ===== */
+document.getElementById("reader").addEventListener("click",e=>{
 const ph=e.target.closest(".phrase")
-if(ph){
+if(!ph) return
 e.stopPropagation()
 const p=PHRASES[ph.dataset.i]
-if(p)alert(p.text+" = "+p.meaning)
-return
-}
-selectSentence(i)
-speakSentence(i)
+if(p) alert(p.text+" = "+p.meaning)
 })
 
-const trans=document.createElement("div")
-trans.className="translation"
-trans.id="tr"+i
-
-wrap.appendChild(trans)
-box.appendChild(wrap)
-})
-}
-
-/* ====== READER ====== */
-function loadText(text){
-sentences=text.split(/[.!?]+/).filter(s=>s.trim())
-renderSentences()
-}
-
-function selectSentence(i){
-document.querySelectorAll(".sentence").forEach(s=>s.classList.remove("active"))
-const el=document.querySelectorAll(".sentence")[i]
-if(el)el.classList.add("active")
-currentIndex=i
-}
-
+/* ===== SPEAK ===== */
 function speakSentence(i){
-const t=sentences[i]
-if(!t)return
-const u=new SpeechSynthesisUtterance(t)
-const v=voiceSelect.value
-if(v&&voices[v])u.voice=voices[v]
-speechSynthesis.speak(u)
+synth.cancel()
+const u=new SpeechSynthesisUtterance(sentences[i])
+u.lang="en-US"
+synth.speak(u)
 }
 
 function playAll(){
-sentences.forEach((s)=>{
-const u=new SpeechSynthesisUtterance(s)
-speechSynthesis.speak(u)
-})
+let i=0
+function next(){
+if(i>=sentences.length) return
+const u=new SpeechSynthesisUtterance(sentences[i])
+u.onend=()=>{i++;next()}
+synth.speak(u)
+}
+next()
 }
 
-function stopSpeak(){
-speechSynthesis.cancel()
+function stopSpeak(){synth.cancel()}
+
+function clearText(){
+document.getElementById("inputText").value=""
 }
-
-/* ====== VOICE ====== */
-function loadVoices(){
-voices=speechSynthesis.getVoices()
-const sel=document.getElementById("voiceSelect")
-sel.innerHTML=""
-voices.forEach((v,i)=>{
-const o=document.createElement("option")
-o.value=i
-o.textContent=v.name
-sel.appendChild(o)
-})
-}
-
-speechSynthesis.onvoiceschanged=loadVoices
-loadVoices()
-
-/* ===== DEMO TEXT ===== */
-loadText("Take care of your health. We will deal with this problem later. It was a piece of cake.")
-
 </script>
 </body>
 </html>
