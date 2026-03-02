@@ -338,13 +338,44 @@ reader.readAsText(file)
 if(!Array.isArray(PHRASES)) return;
 
 const irr = {
-  come:["come","comes","came","coming"],
-  go:["go","goes","went","going"],
-  take:["take","takes","took","taking"],
-  run:["run","runs","ran","running"],
-  get:["get","gets","got","getting"],
-  make:["make","makes","made","making"],
-  give:["give","gives","gave","giving"]
+be:["be","am","is","are","was","were","being","been"],
+have:["have","has","had","having"],
+do:["do","does","did","doing"],
+come:["come","comes","came","coming"],
+go:["go","goes","went","going","gone"],
+get:["get","gets","got","getting","gotten"],
+make:["make","makes","made","making"],
+take:["take","takes","took","taking","taken"],
+give:["give","gives","gave","giving","given"],
+run:["run","runs","ran","running"],
+see:["see","sees","saw","seeing","seen"],
+find:["find","finds","found","finding"],
+think:["think","thinks","thought","thinking"],
+bring:["bring","brings","brought","bringing"],
+buy:["buy","buys","bought","buying"],
+catch:["catch","catches","caught","catching"],
+feel:["feel","feels","felt","feeling"],
+keep:["keep","keeps","kept","keeping"],
+leave:["leave","leaves","left","leaving"],
+meet:["meet","meets","met","meeting"],
+pay:["pay","pays","paid","paying"],
+say:["say","says","said","saying"],
+sell:["sell","sells","sold","selling"],
+send:["send","sends","sent","sending"],
+sit:["sit","sits","sat","sitting"],
+speak:["speak","speaks","spoke","speaking","spoken"],
+stand:["stand","stands","stood","standing"],
+tell:["tell","tells","told","telling"],
+understand:["understand","understands","understood","understanding"],
+win:["win","wins","won","winning"],
+write:["write","writes","wrote","writing","written"],
+set:["set","sets","setting"],
+put:["put","puts","putting"],
+cut:["cut","cuts","cutting"],
+let:["let","lets","letting"],
+hit:["hit","hits","hitting"],
+shut:["shut","shuts","shutting"],
+hurt:["hurt","hurts","hurting"]
 };
 
 function expandPhrase(text){
@@ -361,11 +392,30 @@ function expandPhrase(text){
 const extra=[];
 
 PHRASES.forEach(p=>{
+
+  // normal variants
   expandPhrase(p.text).forEach(v=>{
     if(!PHRASES.some(x=>x.text===v)){
       extra.push({text:v,meaning:p.meaning});
     }
   });
+
+  // separable pattern: verb + OBJ + particle
+  const parts = p.text.split(" ");
+  if(parts.length===2){
+    const v = parts[0];
+    const part = parts[1];
+
+    const forms = irr[v] || [v, v+"s", v+"ed", v+"ing"];
+
+    forms.forEach(f=>{
+      const pattern = f+" ___ "+part;
+      if(!PHRASES.some(x=>x.text===pattern)){
+        extra.push({text:pattern,meaning:p.meaning});
+      }
+    });
+  }
+
 });
 
 PHRASES.push(...extra);
