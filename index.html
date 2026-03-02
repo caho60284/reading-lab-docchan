@@ -239,7 +239,7 @@ cursor:pointer;
 
 <header>
 <h1>📘 Reading Lab</h1>
-<div class="lab">Created by : Doc Chan</div>
+<div class="lab">LAB VERSION</div>
 </header>
 
 <div class="main">
@@ -331,6 +331,46 @@ if(t&&m)addPhrase(t,m)
 }
 reader.readAsText(file)
 }
+
+/* === PHRASAL AUTO VARIANTS === */
+(function(){
+
+if(!Array.isArray(PHRASES)) return;
+
+const irr = {
+  come:["come","comes","came","coming"],
+  go:["go","goes","went","going"],
+  take:["take","takes","took","taking"],
+  run:["run","runs","ran","running"],
+  get:["get","gets","got","getting"],
+  make:["make","makes","made","making"],
+  give:["give","gives","gave","giving"]
+};
+
+function expandPhrase(text){
+  const parts = text.split(" ");
+  if(parts.length<2) return [text];
+
+  const v = parts[0];
+  const rest = parts.slice(1).join(" ");
+
+  let forms = irr[v] || [v, v+"s", v+"ed", v+"ing"];
+  return forms.map(f=>f+" "+rest);
+}
+
+const extra=[];
+
+PHRASES.forEach(p=>{
+  expandPhrase(p.text).forEach(v=>{
+    if(!PHRASES.some(x=>x.text===v)){
+      extra.push({text:v,meaning:p.meaning});
+    }
+  });
+});
+
+PHRASES.push(...extra);
+
+})();
 
 function detectPhrases(text){
 let out=text
