@@ -598,6 +598,28 @@ function stopSpeak(){synth.cancel()}
 function clearText(){
 document.getElementById("inputText").value=""
 }
+
+function exportPhraseCSV(){
+
+  if(!PHRASES.length){
+    alert("No phrases to export")
+    return
+  }
+
+  let csv = "text,meaning\n"
+
+  PHRASES.forEach(p=>{
+    const t = `"${(p.text||"").replace(/"/g,'""')}"`
+    const m = `"${(p.meaning||"").replace(/"/g,'""')}"`
+    csv += t + "," + m + "\n"
+  })
+
+  const blob = new Blob(["\uFEFF"+csv], {type:"text/csv;charset=utf-8;"})
+  const link = document.createElement("a")
+  link.href = URL.createObjectURL(blob)
+  link.download = "phrases_backup.csv"
+  link.click()
+}
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
