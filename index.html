@@ -281,10 +281,14 @@ cursor:pointer;
 <!-- PHRASE PANEL -->
 <div id="phrasePanel">
 <span id="phraseCount">0 phrases</span>
-<button onclick="deleteAllPhrases()">🗑</button>
-<label>📥
+
+<button onclick="deleteAllPhrases()" title="Delete All">🗑️</button>
+
+<label title="Import CSV">📂
 <input type="file" accept=".csv" style="display:none" onchange="importPhraseCSV(this.files[0])">
 </label>
+
+<button onclick="exportPhraseCSV()" title="Export CSV">💾</button>
 </div>
 
 <script>
